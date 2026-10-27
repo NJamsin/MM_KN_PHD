@@ -1,0 +1,7 @@
+*.ipynb
+color/
+color_m*
+lightBH*
+*.zip
+pop*
+KN_range/seed_all/seed.csv
