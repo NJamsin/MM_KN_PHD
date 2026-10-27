@@ -1,0 +1,45 @@
+table.risktable tr:nth-child(3) td:nth-child(1) {
+    vertical-align: top;
+}
+
+table.risktable tr:nth-child(3) td:nth-child(1) p {
+    transform: rotate(90deg);
+    width: 0.5rlh;
+}
+
+table.risktable tr:nth-child(3) td:nth-child(3),
+table.risktable tr:nth-child(4) td:nth-child(2),
+table.risktable tr:nth-child(5) td:nth-child(2),
+table.risktable tr:nth-child(6) td:nth-child(2),
+table.risktable tr:nth-child(7) td:nth-child(2),
+table.risktable tr:nth-child(5) td:nth-child(3),
+table.risktable tr:nth-child(6) td:nth-child(3),
+table.risktable tr:nth-child(7) td:nth-child(3),
+table.risktable tr:nth-child(7) td:nth-child(4),
+table.risktable tr:nth-child(7) td:nth-child(5)
+{
+    background-color: palegreen;
+}
+
+table.risktable tr:nth-child(3) td:nth-child(4),
+table.risktable tr:nth-child(4) td:nth-child(3),
+table.risktable tr:nth-child(4) td:nth-child(4),
+table.risktable tr:nth-child(5) td:nth-child(4),
+table.risktable tr:nth-child(5) td:nth-child(5),
+table.risktable tr:nth-child(6) td:nth-child(4),
+table.risktable tr:nth-child(6) td:nth-child(5),
+table.risktable tr:nth-child(6) td:nth-child(6),
+table.risktable tr:nth-child(7) td:nth-child(6)
+{
+    background-color: lightyellow;
+}
+
+table.risktable tr:nth-child(3) td:nth-child(5),
+table.risktable tr:nth-child(3) td:nth-child(6),
+table.risktable tr:nth-child(3) td:nth-child(7),
+table.risktable tr:nth-child(4) td:nth-child(5),
+table.risktable tr:nth-child(4) td:nth-child(6),
+table.risktable tr:nth-child(5) td:nth-child(6)
+{
+    background-color: lightcoral;
+}

@@ -1,0 +1,195 @@
+[project]
+name = "m4opt"
+dynamic = ["version"]
+authors = [{name = "M4OPT Developers", email = "leo.singer@ligo.org"}]
+license = "BSD-3-Clause"
+description = "Multi-Mission Multi-Messenger Observation Planning Toolkit"
+readme = "README.rst"
+requires-python = ">=3.12, <3.15"
+dependencies = [
+    "aep8 >= 1.1.0",
+    "antiprism-python",
+    "astropy >= 7.1.0",
+    "astropy-healpix",
+    "astroquery",
+    "cplex ~= 22.2.0.0",
+    "docplex",
+    "dust-extinction >= 1.7",
+    "dustmaps",
+    "frozendict; python_version < '3.15'",
+    "ligo.skymap >= 2.5.4",
+    "networkx",
+    "numpy >= 2.5.0",  # https://github.com/numpy/numpy/pull/30870
+    "regions",
+    "pymetis",
+    "satellitetle",
+    "scipy",
+    "sgp4",
+    "shapely >= 2.1.0",
+    "spiceypy",
+    "sympy",
+    "synphot",
+    "typer >= 0.26.0",
+    "xdg-base-dirs",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Typing :: Typed",
+]
+
+[dependency-groups]
+test = [
+    "astroplan",
+    "hypothesis",
+    "networkx",
+    "sphinx",
+    "sphinxcontrib-bibtex",
+    "pytest-astropy",
+    "pytest-benchmark",
+    "pytest-regressions",
+    "uvex-imager-etc @ git+https://github.com/uvex-mission/uvex-imager-etc.git",  # FIXME: not yet on PyPI. See https://github.com/uvex-mission/uvex-imager-etc/issues/12
+]
+docs = [
+    "pysiaf",
+    "sphinx-astropy[confv2]",
+    "sphinxcontrib-bibtex",
+    "sphinxcontrib-typer",
+]
+
+[project.urls]
+Homepage = "https://m4opt.readthedocs.io/"
+"Bug Tracker" = "https://github.com/m4opt/m4opt/issues"
+"Change Log" = "https://m4opt.readthedocs.io/en/latest/changes.html"
+"Documentation" = "https://m4opt.readthedocs.io/"
+"GitHub" = "https://github.com/m4opt/m4opt"
+
+[project.scripts]
+m4opt = "m4opt._cli:app"
+
+[tool.setuptools.package-data]
+"*" = [
+    "py.typed",
+    "*.txt",
+    "*.csv",
+    "*.ecsv",
+    "*.xml",
+]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["*.c"]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "src/m4opt",
+    "docs",
+]
+norecursedirs = [
+    "_build",
+]
+astropy_header = true
+doctest_plus = "enabled"
+text_file_format = "rst"
+addopts = [
+    "--doctest-rst",
+    "--ignore=docs/_build",
+]
+doctest_optionflags = [
+    "FLOAT_CMP",
+    "IGNORE_EXCEPTION_DETAIL",
+]
+
+[tool.coverage.run]
+omit = [
+    "src/m4opt/*setup_package*",
+    "src/m4opt/extern/*",
+    "src/m4opt/_version*",
+    "*/m4opt/*setup_package*",
+    "*/m4opt/extern/*",
+    "*/m4opt/_version*",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    # Don't complain about packages we have installed
+    "except ImportError",
+    # Don't complain if tests don't hit assertions
+    "raise AssertionError",
+    "raise NotImplementedError",
+    # Don't complain about script hooks
+    "def main\\(.*\\):",
+    # Ignore branches that don't pertain to this version of Python
+    "pragma: py{ignore_python_version}",
+    # Don't complain about IPython completion helper
+    "def _ipython_key_completions_",
+]
+
+[build-system]
+requires = [
+    "extension-helpers>=1.5,<2",
+    "numpy>=2",
+    "setuptools>=64",
+    "setuptools_scm>=8",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/m4opt/_version.py"
+
+[tool.mypy]
+exclude = ["^docs/"]
+ignore_missing_imports = true
+
+[tool.codespell]
+ignore-words-list = """
+    aas,
+    sav,
+    ser,
+    ToO,
+    ToOs,
+"""
+
+# Currently, free-threaded builds do not support the Python Limited API.
+# See https://github.com/python/cpython/issues/111506
+[[tool.cibuildwheel.overrides]]
+select = "cp3??t-*"
+inherit.environment = "append"
+environment.EXTENSION_HELPERS_PY_LIMITED_API = ""
+
+[[tool.cibuildwheel.overrides]]
+# Both arches build on macOS 15, whose Homebrew libomp is itself built for 15.0.
+select = "*macos*"
+inherit.environment = "append"
+environment.MACOSX_DEPLOYMENT_TARGET = "15.0"
+
+[tool.cibuildwheel.macos]
+before-all = "brew install llvm@15 libomp"
+
+[tool.cibuildwheel.macos.environment]
+CC = "$(brew --prefix llvm@15)/bin/clang"
+CXX = "$(brew --prefix llvm@15)/bin/clang++"
+CPPFLAGS = "-I$(brew --prefix libomp)/include"
+LDFLAGS = "-L$(brew --prefix libomp)/lib"
+
+[tool.numpydoc_validation]
+checks = [
+    "all",
+    "ES01",
+    "EX01",
+    "GL08",
+    "PR01",
+    "PR04",
+    "RT01",
+    "SA01",
+    "SA04",
+]
+
+[tool.extension-helpers]
+use_extension_helpers = true
