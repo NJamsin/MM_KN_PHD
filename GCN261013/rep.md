@@ -2,7 +2,7 @@
 
 # 2 visit:
 ```bash
-m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/sch_tom_2v.ecsv \
+m4opt schedule skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/sch_tom_2v.ecsv \
 --mission ztf --deadline 76min  --time-step 1.0min --event-time 2026-10-14T10:41:00 --timelimit 1000s \
 --bandpass g --bandpass r --visits 2 --nside 512 --max-fields 50 --jobs 0 \
 --write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
@@ -19,7 +19,7 @@ m4opt animate /home/liteul/phd/events/GCN261013/sch_tom_2v.ecsv \
 
 # 1 visit:
 ```bash
-m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/sch_tom_1v.ecsv \
+m4opt schedule skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/sch_tom_1v.ecsv \
 --mission ztf --deadline 76min  --time-step 1.0min --event-time 2026-10-14T10:41:00 --timelimit 1000s \
 --bandpass g --bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 \
 --write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \

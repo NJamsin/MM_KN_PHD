@@ -1,0 +1,137 @@
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/schedule.ecsv \
+--mission ztf --deadline 2h  --time-step 1.0min --event-time 2026-10-14T09:36:00 --timelimit 300s \
+--bandpass g --bandpass r --visits 2 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/GCN261013/MODEL.lp
+
+m4opt animate /home/liteul/phd/events/GCN261013/schedule.ecsv \
+--time-step 10min --still /home/liteul/phd/events/GCN261013/still.pdf --dpi 180 \
+/home/liteul/phd/events/GCN261013/movie.gif
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/schedule_1vis.ecsv \
+--mission ztf --deadline 2h  --time-step 1.0min --event-time 2026-10-14T09:36:00 --timelimit 300s \
+--bandpass g --bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/GCN261013/MODEL.lp
+
+m4opt animate /home/liteul/phd/events/GCN261013/schedule_1vis.ecsv \
+--time-step 10min --still /home/liteul/phd/events/GCN261013/still_1vis.pdf --dpi 180 \
+/home/liteul/phd/events/GCN261013/movie_1vis.gif
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/schedule_2vis.ecsv \
+--mission ztf --deadline 4.1h --delay 2.1h  --time-step 1.0min --event-time 2026-10-14T09:36:00 --timelimit 300s \
+--bandpass g --bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/GCN261013/MODEL.lp
+
+m4opt animate /home/liteul/phd/events/GCN261013/schedule_2vis.ecsv \
+--time-step 10min --still /home/liteul/phd/events/GCN261013/still_2vis.pdf --dpi 180 \
+/home/liteul/phd/events/GCN261013/movie_2vis.gif
+
+m4opt animate-multi /home/liteul/phd/events/GCN261013/schedule_1vis.ecsv /home/liteul/phd/events/GCN261013/schedule_2vis.ecsv \
+--time-step 10min --still /home/liteul/phd/events/GCN261013/still_comb.pdf --dpi 180 \
+--output /home/liteul/phd/events/GCN261013/movie_comb.gif
+
+m4opt animate-multi /home/liteul/phd/events/GCN261013/schedule_1vis.ecsv /home/liteul/phd/events/GCN261013/schedule_1vis_reversed_after_2p1h.ecsv \
+--time-step 10min --still /home/liteul/phd/events/GCN261013/still_comb_r.pdf --dpi 180 \
+--output /home/liteul/phd/events/GCN261013/movie_comb_r.gif
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/schedule_other_skygrid.ecsv \
+--mission ztf --deadline 2h  --time-step 1.0min --event-time 2026-10-14T10:41:00 --timelimit 600s \
+--bandpass g --bandpass r --visits 2 --nside 512 --max-fields 50 --jobs 0 --skygrid bbb \
+--write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/GCN261013/MODEL.lp
+
+m4opt animate /home/liteul/phd/events/GCN261013/schedule_other_skygrid.ecsv \
+--time-step 10min --still /home/liteul/phd/events/GCN261013/still_other.pdf --dpi 180 \
+/home/liteul/phd/events/GCN261013/movie_other.gif
+
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/Bilby.offline0.multiorder.fits /home/liteul/phd/events/S230518h/schedule \
+--deadline 2h  --time-step 1.0min --timelimit 30min \
+--bandpass g --bandpass r --visits 2 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/S230518h/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/S230518h/MODEL.lp
+
+m4opt animate-multi /home/liteul/phd/events/S230518h/schedule_rubin.ecsv /home/liteul/phd/events/S230518h/schedule_ztf.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S230518h/still.pdf --dpi 180 \
+--output /home/liteul/phd/events/S230518h/movie.gif
+
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/Bilby.offline0.multiorder.fits /home/liteul/phd/events/S230518h/schedule_mono \
+--deadline 2h  --time-step 1.0min --timelimit 30min \
+--bandpass g --bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/S230518h/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/S230518h/MODEL_mono.lp
+
+m4opt animate-multi /home/liteul/phd/events/S230518h/schedule_mono_rubin.ecsv /home/liteul/phd/events/S230518h/schedule_mono_ztf.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S230518h/still_mono.pdf --dpi 180 \
+--output /home/liteul/phd/events/S230518h/movie_mono.gif
+
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/Bilby.offline0.multiorder.fits /home/liteul/phd/events/S230518h/schedule_time \
+--deadline 2h  --time-step 1.0min --timelimit 30min --event-time 2026-11-07T01:50:00 \
+--bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/S230518h/PROGRESS.ecsv --exptime-min 300s \
+--write-model /home/liteul/phd/events/S230518h/MODEL_time.lp
+
+m4opt animate-multi /home/liteul/phd/events/S230518h/schedule_time_rubin.ecsv /home/liteul/phd/events/S230518h/schedule_time_ztf.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S230518h/still_time.pdf --dpi 180 \
+--output /home/liteul/phd/events/S230518h/movie_time.gif
+
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/bayestar.multiorder.fits /home/liteul/phd/events/S251118cm/schedule_2 \
+--deadline 2h  --time-step 1.0min --timelimit 5min --event-time 2027-04-06T06:00:00 \
+--bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/S251118cm/PROGRESS.ecsv --exptime-min 300s \
+--write-model /home/liteul/phd/events/S251118cm/MODEL2.lp
+
+m4opt animate-multi /home/liteul/phd/events/S251118cm/schedule_2_rubin.ecsv /home/liteul/phd/events/S251118cm/schedule_2_ztf.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S251118cm/still2.pdf --dpi 180 \
+--output /home/liteul/phd/events/S251118cm/movie2.gif
+
+--------------------THOMAS SCHEDULE GRB261013A-----------------------------------------------------
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/sch_tom_2v.ecsv \
+--mission ztf --deadline 76min  --time-step 1.0min --event-time 2026-10-14T10:41:00 --timelimit 1000s \
+--bandpass g --bandpass r --visits 2 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/GCN261013/MODEL_thom_2v.lp
+
+m4opt animate /home/liteul/phd/events/GCN261013/sch_tom_2v.ecsv \
+--time-step 10min --still /home/liteul/phd/events/GCN261013/still_t_2v.pdf --dpi 180 \
+/home/liteul/phd/events/GCN261013/movie_t_2v.gif
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/sch_tom_1v.ecsv \
+--mission ztf --deadline 76min  --time-step 1.0min --event-time 2026-10-14T10:41:00 --timelimit 1000s \
+--bandpass g --bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/GCN261013/MODEL_thom_1v.lp
+
+m4opt animate /home/liteul/phd/events/GCN261013/sch_tom_1v.ecsv \
+--time-step 10min --still /home/liteul/phd/events/GCN261013/still_t_1v.pdf --dpi 180 \
+/home/liteul/phd/events/GCN261013/movie_t_1v.gif
+
+
+--------------------GW event multi------------------------------------------
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/Bilby.multiorder.fits /home/liteul/phd/events/S251112cm/schedule \
+--write-model /home/liteul/phd/events/S251112cm/model.lp --event-time 2026-11-01T04:00:00
+
+m4opt animate-multi /home/liteul/phd/events/S251112cm/schedule_rubin.ecsv /home/liteul/phd/events/S251112cm/schedule_ztf.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S251112cm/still.pdf --dpi 180 \
+--output /home/liteul/phd/events/S251112cm/movie.gif
+
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/s251108fi.fits /home/liteul/phd/events/S251108fi/schedule \
+--write-model /home/liteul/phd/events/S251108fi/model.lp --event-time 2026-10-27T05:00:00
+
+m4opt animate-multi /home/liteul/phd/events/S251108fi/schedule_rubin.ecsv /home/liteul/phd/events/S251108fi/schedule_ztf.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S251108fi/still.pdf --dpi 180 \
+--output /home/liteul/phd/events/S251108fi/movie.gif
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/s251108fi.fits /home/liteul/phd/events/S251108fi/schedule_rub.ecsv \
+--write-model /home/liteul/phd/events/S251108fi/model_rub.lp --event-time 2026-10-27T05:00:00 --mission rubin --bandpass r --exptime-min 300s --deadline 2h \
+--visits 1 --nside 512
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/s251108fi.fits /home/liteul/phd/events/S251108fi/schedule_ZTF.ecsv \
+--write-model /home/liteul/phd/events/S251108fi/model_ztf.lp --event-time 2026-10-27T05:00:00 --mission ztf --bandpass r --exptime-min 300s --deadline 2h \
+--visits 1 --nside 512
+
+m4opt animate-multi /home/liteul/phd/events/S251108fi/schedule_rub.ecsv /home/liteul/phd/events/S251108fi/schedule_ZTF.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S251108fi/still_mono.pdf --dpi 180 \
+--output /home/liteul/phd/events/S251108fi/movie_mono.gif
