@@ -124,8 +124,6 @@ def prepare_visit_configuration(visits, bandpass, exptime_min):
     ).to_value(u.s)
     return visit_bandpasses, visit_exptime_min_s
 
-''''''
-
 def build_mission_table(
     mission_name,
     mission_obj,                       # missions[mission_name]
@@ -140,12 +138,12 @@ def build_mission_table(
     visit_exptime_min_s,
     obstimes,
     deadline, delay,
-    meta_common,                       # dict d'args communs (skymap, nside, …)
+    meta_common,                       # common val for all missions
     objective_value, model, has_model,
 ):
     nf = n_fields[mission_name]
 
-    # --- 1. Valeurs par mission ---
+    # per mission value extraction
     if solution is None:
         field_values = np.zeros(nf, dtype=bool)
         time_field_visit_values = np.empty((nf, visits))
@@ -155,7 +153,7 @@ def build_mission_table(
         time_field_visit_values = solution.get_values(time_field_visit_vars[mission_name])
         exptime_field_values = np.tile(visit_exptime_min_s, (nf, 1))
 
-    # --- 2. Table "observe" par mission ---
+    # per mission table
     idx = np.flatnonzero(field_values)
     n_obs = idx.size * visits
     print("visit_exptime_min_s:", type(visit_exptime_min_s),
@@ -195,14 +193,14 @@ def build_mission_table(
     )
     table.sort("start_time")
 
-    # --- 3. Observateur de CETTE mission ---
+    # mission's intrinsic observer (not common)
     table.add_column(
         mission_obj.observer_location(table["start_time"]),
         index=3, name="observer_location",
     )
     table["observer_location"].info.description = "Position of the spacecraft"
 
-    # --- 4. Slew internes à la mission ---
+    # slew
     if len(table) > 0:
         nrows = len(table) - 1
         slew_duration = mission_obj.slew.time(
@@ -222,7 +220,7 @@ def build_mission_table(
         table = vstack((table, slew_table))
     table.sort("start_time")
 
-    # --- 5. Métadonnées par mission ---
+    # mission's specific meta data
     if len(table) > 0:
         total_time_by_action = (
             table["action", "duration"].group_by("action").groups.aggregate(np.sum)
@@ -255,21 +253,19 @@ def build_mission_table(
     })
     return table
 
-''''''
-
 @app.command()
 @progress()
 def schedule_multi(
     skymap: Annotated[
         typer.FileBinaryRead,
         typer.Argument(help="Sky map filename", metavar="INPUT.multiorder.fits"),
-    ] = "/home/liteul/phd/m4opt_nb_work/FIG/fake_10.fits",
+    ],
     schedule: Annotated[
         str,
         typer.Argument(
             help="Output filename for generated schedule, attention, don't provide the extension, the scheduler will produce several out files (1 per mission)", metavar="SCHEDULE.ecsv"
         ),
-    ] = "/home/liteul/phd/m4opt_nb_work/test_2rub/schedule",
+    ],
     exptime_min: Annotated[
         list[u.Quantity[u.physical.time]],
         typer.Option(
@@ -277,7 +273,7 @@ def schedule_multi(
             "option to give each bandpass its own exposure time, in the same "
             "order as --bandpass; a single value applies to every bandpass",
         ),
-    ] = (300 * u.s,),
+    ] = (30 * u.s,),
     skygrid: Annotated[
         str | None,
         typer.Option(
@@ -342,7 +338,7 @@ def schedule_multi(
             "Visits are grouped into contiguous blocks of a single bandpass so "
             "that the filter is exchanged only between blocks."
         ),
-    ] = ['r'],
+    ] = ['r'], # must be changed to have per facility filter !
     visits: Annotated[int, typer.Option(min=1, help="Number of visits")] = 1,
     cadence: Annotated[
         u.Quantity,
