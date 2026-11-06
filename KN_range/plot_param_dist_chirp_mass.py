@@ -7,7 +7,7 @@ import pandas as pd
 import corner
 
 
-OUTDIR = "/home/liteul/phd/NSBH/KN_range/seed_all"
+OUTDIR = "/home/liteul/phd/NSBH/KN_range/test_19"
 
 seed_files = {
     "H4": f"{OUTDIR}/seed.csv",
@@ -15,26 +15,18 @@ seed_files = {
 }
 
 param_names = [
-    "mass_1",
-    "mass_2",
-    "mass_ratio",
-    "chirp_mass",
-    "chi_bh",
-    "zeta",
-    "log10_mej_dyn",
-    "log10_mej_wind",
-    "log10_mej"
+    "luminosity_distance",
+    "KNtheta",
+    "log10_mej",
+    "t_det_start",
+    "t_det_end"
 ]
 params_latex = {
-    "mass_1": r"$m_1$",
-    "mass_2": r"$m_2$",
-    "mass_ratio": r"$q$",
-    "chirp_mass": r"$\mathcal{M}$",
-    "chi_bh": r"$\chi_{\rm{BH}}$",
-    "zeta": r"$\zeta$",
-    "log10_mej_dyn": r"$\log_{10} M_{ej}^{dyn}$",
-    "log10_mej_wind": r"$\log_{10} M_{ej}^{wind}$",
+    "luminosity_distance": r"$D_L$",
+    "KNtheta": r"$\theta$",
     "log10_mej": r"$\log_{10} M_{ej}$",
+    "t_det_start": r"$t_{\rm{start}}$",
+    "t_det_end": r"$t_{\rm{end}}$",
 }
 
 for eos, seed_file in seed_files.items():
