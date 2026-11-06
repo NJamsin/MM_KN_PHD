@@ -1,3 +1,4 @@
+import heapq
 import shlex
 import sys
 from itertools import pairwise
@@ -52,6 +53,9 @@ def invert_footprints(footprints, n_pixels):
             pixels_to_fields_map[j].append(i)
     return [np.asarray(field_indices) for field_indices in pixels_to_fields_map]
 
+
+def remap_footprints(footprints, pixel_map):
+    return [pixel_map[footprint] for footprint in footprints]
 
 def invert_footprints_to_regions(footprints, n_pixels):
     """
@@ -353,13 +357,21 @@ def schedule_multi(
             "it grows the problem roughly quadratically",
         ),
     ] = 50,
+    overlap_weight: Annotated[
+        float,
+        typer.Option(
+            min=0,
+            max=1,
+            help="Weight for the overlap term in the objective function. 0=no overlap, 1=recount each pixel when preselecting the most probable fields",
+        ),
+    ] = 0.5,
     timelimit: Annotated[
         u.Quantity,
         typer.Option(
             help="Time limit for MILP solver",
             rich_help_panel="Solver Options",
         ),
-    ] = 15 * u.min,
+    ] = 1 * u.h,
     memory: Annotated[
         u.Quantity,
         typer.Option(
@@ -405,13 +417,21 @@ def schedule_multi(
     mission_names: Annotated[
         list[str],
         typer.Option(
-            "--mission",
+            "--mission-names",
             help="Mission to include in the joint schedule. Repeat for each mission.",
         ),
     ] = ["rubin", "ztf"],
+    write_candidates: Annotated[
+        str | None,
+        typer.Option(
+            help="Save observable candidate fields and their HEALPix footprints for each mission to an NPZ file. The input is a suffix, the saved files will be named as <suffix>_<mission>.npz",
+            metavar="<suffix>_<mission>.npz",
+        ),
+    ] = None,
 ):
     missions = select_missions(mission_names)
-    adaptive_exptime = False # force constant exp time for now
+    with status(f"Using missions: {missions.keys()}"):
+        adaptive_exptime = False # force constant exp time for now
 
     visit_bandpasses, visit_exptime_min_s = prepare_visit_configuration(
         visits, bandpass, exptime_min
@@ -510,6 +530,7 @@ def schedule_multi(
         n_fields = {}
         n_pixels = {}
         skymap_flat_full = skymap_flat
+        all_footprints = {}
         for mission in missions.keys():
             if isinstance(missions[mission].observer_location, EarthFixedObserverLocation):
                 rolls[mission] = np.zeros(len(target_coords[mission])) * u.deg
@@ -520,21 +541,90 @@ def schedule_multi(
                 # does not change much over the duration.
                 rolls[mission] = nominal_roll(observer_locations[mission][0], target_coords[mission], event_time)
             footprints[mission] = footprint_healpix(hpx, missions[mission].fov, target_coords[mission], rolls[mission])
+            all_footprints[mission] = footprints[mission]
 
-            # Consider only the most probable fields.
-            n_fields[mission] = max_fields
-            if len(target_coords[mission]) > n_fields[mission]:
-                good = np.argpartition(
-                    [-skymap_flat_full[footprint]["PROB"].sum() for footprint in footprints[mission]],
-                    n_fields[mission],
-                )[:n_fields[mission]]
-                target_coords[mission] = target_coords[mission][good]
-                rolls[mission] = rolls[mission][good]
-                footprints[mission] = footprints[mission][good]
-                observable_intervals[mission] = observable_intervals[mission][good]
-                field_ids[mission] = field_ids[mission][good]
-            else:
-                n_fields[mission] = len(target_coords[mission])
+        pix_prob = np.asarray(skymap_flat_full["PROB"])
+        counts = np.zeros(len(pix_prob), dtype=np.int32)
+
+        selected = {mission: [] for mission in missions.keys()}
+
+        def marginal_gain(fp):
+            fp = np.asarray(fp)
+            p = pix_prob[fp]
+            is_new = counts[fp] == 0
+            return p[is_new].sum() + overlap_weight * p[~is_new].sum() 
+
+        heap = []
+        for mission in missions.keys():
+            for i, fp in enumerate(footprints[mission]):
+                heapq.heappush(heap, (-marginal_gain(fp), mission, i)) 
+
+        n_covered_version = 0                      
+        gain_version = {}                          
+        full = set()        
+
+        while heap and len(full) < len(missions):
+            neg_gain, mission, i = heapq.heappop(heap)
+            if mission in full:
+                continue
+            if gain_version.get((mission, i), -1) != n_covered_version:
+                gain_version[(mission, i)] = n_covered_version
+                heapq.heappush(heap, (-marginal_gain(footprints[mission][i]), mission, i))
+                continue
+            if -neg_gain <= 0:
+                break                            
+            selected[mission].append(i)
+            counts[np.asarray(footprints[mission][i])] += 1
+            n_covered_version += 1
+            if len(selected[mission]) >= max_fields:
+                full.add(mission)
+        print(f"Found best fields after {n_covered_version} iterations, covering {np.count_nonzero(counts)} pixels")
+        for mission in missions.keys():
+            good = np.array(sorted(selected[mission]), dtype=int)
+            n_fields[mission] = len(good)
+            target_coords[mission] = target_coords[mission][good]
+            rolls[mission] = rolls[mission][good]
+            footprints[mission] = footprints[mission][good]
+            observable_intervals[mission] = observable_intervals[mission][good]
+            field_ids[mission] = field_ids[mission][good]
+
+            # save the candidates footprint for a later use
+            if write_candidates is not None:
+                write_candidates_mission = f"{write_candidates}_{mission}.npz"
+                candidate_footprints = [
+                    np.asarray(footprint, dtype=np.intp) for footprint in footprints[mission]
+                ]
+                footprint_lengths = np.fromiter(
+                    (len(footprint) for footprint in candidate_footprints),
+                    dtype=np.intp,
+                    count=len(candidate_footprints),
+                )
+                footprint_offsets = np.concatenate(
+                    (np.zeros(1, dtype=np.intp), np.cumsum(footprint_lengths))
+                )
+                candidate_pixels = (
+                    np.concatenate(candidate_footprints)
+                    if candidate_footprints
+                    else np.asarray([], dtype=np.intp)
+                )
+                candidate_probability = np.asarray(
+                    [
+                        skymap_flat[footprint]["PROB"].sum()
+                        for footprint in candidate_footprints
+                    ]
+                )
+                np.savez(
+                    write_candidates_mission,
+                    field_id=field_ids[mission],
+                    ra_deg=target_coords[mission].ra.to_value(u.deg),
+                    dec_deg=target_coords[mission].dec.to_value(u.deg),
+                    roll_deg=rolls[mission].to_value(u.deg),
+                    probability=candidate_probability,
+                    footprint_pixels=candidate_pixels,
+                    footprint_offsets=footprint_offsets,
+                    nside=nside,
+                    order="nested",
+                )
 
             # Throw away pixels that are not contained in any fields.
             good_pixels = (
@@ -545,9 +635,7 @@ def schedule_multi(
             global_good_pixels[mission] = good_pixels
             imap = np.empty(len(skymap_flat_full), dtype=np.intp)
             imap[good_pixels] = np.arange(len(good_pixels))
-            footprints[mission] = np.asarray(
-                [imap[footprint] for footprint in footprints[mission]], dtype=object
-            )
+            footprints[mission] = remap_footprints(footprints[mission], imap)
             n_pixels[mission] = len(good_pixels)
 
             #pixels_to_fields_map[mission] = invert_footprints(footprints[mission], n_pixels[mission]) -> useless ?
@@ -586,9 +674,8 @@ def schedule_multi(
     pixels_to_fields_map_global = {}
     for mission in missions:
         local_to_global = global_map[global_good_pixels[mission]]
-        footprints_global[mission] = np.asarray(
-            [local_to_global[f] for f in footprints[mission]],
-            dtype=object,
+        footprints_global[mission] = remap_footprints(
+            footprints[mission], local_to_global
         )
         assert all((f >= 0).all() for f in footprints_global[mission]), \
             f"missing pixel for the union of mission {mission}"

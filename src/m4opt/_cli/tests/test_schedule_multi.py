@@ -26,6 +26,19 @@ def test_invert_footprints_handles_overlap_and_uncovered_pixels():
     ]
 
 
+def test_remap_footprints_keeps_equal_sized_footprints_one_dimensional():
+    footprints = [np.array([2, 4]), np.array([3, 5])]
+    pixel_map = np.arange(6, dtype=np.intp) + 10
+
+    remapped = schedule_multi_module.remap_footprints(footprints, pixel_map)
+
+    assert len(remapped) == 2
+    for footprint in remapped:
+        assert footprint.ndim == 1
+        assert np.issubdtype(footprint.dtype, np.integer)
+    assert [footprint.tolist() for footprint in remapped] == [[12, 14], [13, 15]]
+
+
 @pytest.mark.parametrize(
     "footprints,n_pixels",
     [
