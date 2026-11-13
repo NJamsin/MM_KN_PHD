@@ -76,7 +76,7 @@ m4opt animate-multi /home/liteul/phd/events/S230518h/schedule_time_rubin.ecsv /h
 --time-step 10min --still /home/liteul/phd/events/S230518h/still_time.pdf --dpi 180 \
 --output /home/liteul/phd/events/S230518h/movie_time.gif
 
-m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/bayestar.multiorder.fits /home/liteul/phd/events/S251118cm/schedule_2 \
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/bayestar.multiorder.fits /home/liteul/phd/events/S251118cm/schedule_3 \
 --deadline 2h  --time-step 1.0min --timelimit 5min --event-time 2027-04-06T06:00:00 \
 --bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 \
 --write-progress /home/liteul/phd/events/S251118cm/PROGRESS.ecsv --exptime-min 300s \
@@ -135,3 +135,216 @@ m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/s251108fi.fits /home/liteu
 m4opt animate-multi /home/liteul/phd/events/S251108fi/schedule_rub.ecsv /home/liteul/phd/events/S251108fi/schedule_ZTF.ecsv \
 --time-step 10min --still /home/liteul/phd/events/S251108fi/still_mono.pdf --dpi 180 \
 --output /home/liteul/phd/events/S251108fi/movie_mono.gif
+
+-------------------------fi with toy mission-------------------------------------
+m4opt schedule-multi /home/liteul/phd/events/skymaps/s251108fi.fits /home/liteul/phd/events/S251108fi/schedule \
+--write-model /home/liteul/phd/events/S251108fi/model_toy.lp --event-time 2026-10-27T05:00:00 --exptime-min 300s --bandpass r \
+--timelimit 1h --mission-names toy_north --mission-names toy_south 
+
+m4opt animate-multi /home/liteul/phd/events/S251108fi/schedule_toy_north.ecsv /home/liteul/phd/events/S251108fi/schedule_toy_south.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S251108fi/still_toy.pdf --dpi 180 \
+--output /home/liteul/phd/events/S251108fi/movie_toy.gif --inset-center 1h-0deg --inset-radius 17
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/s251108fi.fits /home/liteul/phd/events/S251108fi/schedule_north.ecsv \
+--write-model /home/liteul/phd/events/S251108fi/model_north.lp --event-time 2026-10-27T05:00:00 --mission toy_north --bandpass r --exptime-min 300s --deadline 2h \
+--visits 1 --nside 512
+
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/s251108fi.fits /home/liteul/phd/events/S251108fi/schedule_south.ecsv \
+--write-model /home/liteul/phd/events/S251108fi/model_south.lp --event-time 2026-10-27T05:00:00 --mission toy_south --bandpass r --exptime-min 300s --deadline 2h \
+--visits 1 --nside 512
+
+m4opt animate-multi /home/liteul/phd/events/S251108fi/schedule_north.ecsv /home/liteul/phd/events/S251108fi/schedule_south.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S251108fi/still_toy_mono.pdf --dpi 180 \
+--output /home/liteul/phd/events/S251108fi/movie_toy_mono.gif --inset-center 1h-0deg --inset-radius 17deg
+
+m4opt schedule-multi /home/liteul/phd/events/skymaps/s251108fi.fits /home/liteul/phd/events/S251108fi/schedule_long \
+--write-model /home/liteul/phd/events/S251108fi/model_toy.lp --event-time 2026-10-27T05:00:00 --exptime-min 300s --bandpass r \
+--timelimit 1h --mission-names toy_north --mission-names toy_south --deadline 4h
+
+m4opt animate-multi /home/liteul/phd/events/S251108fi/schedule_long_toy_north.ecsv /home/liteul/phd/events/S251108fi/schedule_long_toy_south.ecsv \
+--time-step 10min --still /home/liteul/phd/events/S251108fi/still_toy_long.pdf --dpi 180 \
+--output /home/liteul/phd/events/S251108fi/movie_toy_long.gif --inset-center 1h-0deg --inset-radius 17deg
+
+----------------------------toy large gaussian skymap-------------------------------
+m4opt schedule-multi /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/events/Gaussian_30/schedule \
+--write-model /home/liteul/phd/events/Gaussian_30/model_toy.lp --event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--timelimit 1h --mission-names toy_north --mission-names toy_south 
+
+m4opt animate-multi /home/liteul/phd/events/Gaussian_30/schedule_toy_north.ecsv /home/liteul/phd/events/Gaussian_30/schedule_toy_south.ecsv \
+--time-step 10min --still /home/liteul/phd/events/Gaussian_30/still.pdf --dpi 180 \
+--output /home/liteul/phd/events/Gaussian_30/movie.gif --inset-center "202d 5d" --inset-radius 17deg
+
+m4opt schedule-multi /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/events/Gaussian_30/schedule_long \
+--write-model /home/liteul/phd/events/Gaussian_30/model_toy_long.lp --event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--timelimit 1h --mission-names toy_north --mission-names toy_south --deadline 8h
+
+m4opt animate-multi /home/liteul/phd/events/Gaussian_30/schedule_long_toy_north.ecsv /home/liteul/phd/events/Gaussian_30/schedule_long_toy_south.ecsv \
+--time-step 10min --still /home/liteul/phd/events/Gaussian_30/still_long.pdf --dpi 100 \
+--output /home/liteul/phd/events/Gaussian_30/movie_long.gif --inset-center "202d 5d" --inset-radius 23deg
+
+m4opt schedule /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/events/Gaussian_30/schedule_south.ecsv \
+--write-model /home/liteul/phd/events/Gaussian_30/model_south.lp --event-time 2026-04-21T04:00:00 --mission toy_south --bandpass r --exptime-min 300s --deadline 2h \
+--visits 1 --nside 512
+
+m4opt schedule /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/events/Gaussian_30/schedule_north.ecsv \
+--write-model /home/liteul/phd/events/Gaussian_30/model_north.lp --event-time 2026-04-21T04:00:00 --mission toy_north --bandpass r --exptime-min 300s --deadline 2h \
+--visits 1 --nside 512
+
+m4opt animate-multi /home/liteul/phd/events/Gaussian_30/schedule_north.ecsv /home/liteul/phd/events/Gaussian_30/schedule_south.ecsv \
+--time-step 10min --still /home/liteul/phd/events/Gaussian_30/still_mono.pdf --dpi 180 \
+--output /home/liteul/phd/events/Gaussian_30/movie_mono.gif --inset-center "202d 5d" --inset-radius 23deg
+
+---------------------issue low proba-------------------------------------------
+m4opt schedule /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/low_proba_issue/schedule_ztf.ecsv \
+--write-model /home/liteul/phd/low_proba_issue/model_ztf.lp --event-time 2026-04-21T04:00:00 --mission ztf --bandpass r --exptime-min 300s --deadline 6h \
+--visits 1 --nside 512 --max-fields 100
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_ztf_100fields.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/ztf_100fields.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/ztf_fields.gif
+
+m4opt schedule /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/low_proba_issue/schedule_rubin_io.ecsv \
+--write-model /home/liteul/phd/low_proba_issue/model_rubin.lp --event-time 2026-04-21T04:00:00 --mission rubin --bandpass r --exptime-min 300s --deadline 8h \
+--visits 1 --nside 512 --max-fields 100
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_rubin_100fields.ecsv \
+--time-step 10min --still /home/liteul/phd/low_proba_issue/rubin.pdf --dpi 100 \
+/home/liteul/phd/low_proba_issue/rubin_100fields.gif --duration 15s
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_rubin_rerun.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/rubin_rerun.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/rubin_rerun.gif
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_rubin_scaled.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/rubin_scaled.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/rubin_scaled.gif
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_ztf_rerun.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/ztf_rerun.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/ztf_rerun.gif
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_ztf_scaled.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/ztf_scaled.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/ztf_scaled.gif
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_ztf_scaled_100.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/ztf_scaled_100.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/ztf_scaled_100.gif
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_rubin_scaled_100.ecsv \
+--time-step 10min --still /home/liteul/phd/low_proba_issue/rubin_scaled_100.pdf --dpi 100 \
+/home/liteul/phd/low_proba_issue/rubin_scaled_100.gif --duration 15s
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_ztf_scaled_long.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/ztf_scaled_long.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/ztf_scaled_long.gif
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_ztf_long.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/ztf_long.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/ztf_long.gif
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_rubin_long.ecsv \
+--time-step 5min --still /home/liteul/phd/low_proba_issue/rubin_long.pdf --dpi 100 \
+/home/liteul/phd/low_proba_issue/rubin_long.gif --duration 10s
+
+m4opt animate /home/liteul/phd/low_proba_issue/schedule_rubin_scaled_long.ecsv \
+--time-step 30min --still /home/liteul/phd/low_proba_issue/rubin_scaled_long.pdf --dpi 180 \
+/home/liteul/phd/low_proba_issue/rubin_scaled_long.gif
+
+m4opt schedule-multi /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/events/Gaussian_30/schedule_long \
+--write-model /home/liteul/phd/events/Gaussian_30/model_toy_long.lp --event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--timelimit 20min --mission-names toy_north --mission-names toy_south --deadline 8h --write-candidates candidates
+
+------------------------------NEW-JOINT CANDIDATES----------------------------------
+m4opt schedule-multi /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/JOINT_FIELDS/schedule \
+--write-model /home/liteul/phd/JOINT_FIELDS/model_toy.lp --event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--mission-names toy_north --mission-names toy_south --deadline 8h --write-candidates /home/liteul/phd/JOINT_FIELDS/candidates
+
+m4opt schedule-multi /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/JOINT_FIELDS/schedule_r \
+--write-model /home/liteul/phd/JOINT_FIELDS/model_toy.lp --event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--mission-names toy_south --mission-names toy_north --deadline 8h --write-candidates /home/liteul/phd/JOINT_FIELDS/candidates
+
+m4opt schedule-multi /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/JOINT_FIELDS/schedule2 \
+--write-model /home/liteul/phd/JOINT_FIELDS/model_toy.lp --event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--mission-names rubin --mission-names ztf --deadline 8h --write-candidates /home/liteul/phd/JOINT_FIELDS/candidates
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/candidates_toy_north.npz --schedule /home/liteul/phd/JOINT_FIELDS/schedule_toy_north.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_north.png
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/candidates_toy_south.npz --schedule /home/liteul/phd/JOINT_FIELDS/schedule_toy_south.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_south.png
+
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/candidates_toy_north.npz --schedule /home/liteul/phd/JOINT_FIELDS/schedule_r_toy_north.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_north_r.png
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/candidates_toy_south.npz --schedule /home/liteul/phd/JOINT_FIELDS/schedule_r_toy_south.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_south_r.png
+
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/candidates_rubin.npz --schedule /home/liteul/phd/JOINT_FIELDS/schedule2_rubin.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_rubin.png
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/candidates_ztf.npz --schedule /home/liteul/phd/JOINT_FIELDS/schedule2_ztf.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_ztf.png
+
+m4opt animate-multi /home/liteul/phd/JOINT_FIELDS/schedule2_rubin.ecsv /home/liteul/phd/JOINT_FIELDS/schedule2_ztf.ecsv \
+--time-step 20min --still /home/liteul/phd/JOINT_FIELDS/rub_ztf.pdf --dpi 100 \
+--output /home/liteul/phd/JOINT_FIELDS/movie_rz.gif --inset-center "202d 5d" --inset-radius 20deg
+
+m4opt schedule-multi /home/liteul/phd/events/skymaps/fake_gaussian_30.fits /home/liteul/phd/JOINT_FIELDS/schedule3 \
+--write-model /home/liteul/phd/JOINT_FIELDS/model_toy.lp --event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--mission-names ztf --mission-names rubin --deadline 8h --write-candidates /home/liteul/phd/JOINT_FIELDS/candidates2
+
+m4opt animate-multi /home/liteul/phd/JOINT_FIELDS/schedule3_rubin.ecsv /home/liteul/phd/JOINT_FIELDS/schedule3_ztf.ecsv \
+--time-step 20min --still /home/liteul/phd/JOINT_FIELDS/ztf_rub.pdf --dpi 100 \
+--output /home/liteul/phd/JOINT_FIELDS/movie_zr.gif --inset-center "202d 5d" --inset-radius 20deg
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/candidates2_rubin.npz --schedule /home/liteul/phd/JOINT_FIELDS/schedule3_rubin.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_rubin2.png
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/candidates2_ztf.npz --schedule /home/liteul/phd/JOINT_FIELDS/schedule3_ztf.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_ztf2.png
+
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/bayestar.multiorder.fits /home/liteul/phd/JOINT_FIELDS/S251118cm \
+--write-model /home/liteul/phd/JOINT_FIELDS/model_toy.lp --event-time 2026-04-21T05:00:00 --exptime-min 300s --bandpass r \
+--mission-names ztf --mission-names rubin --deadline 2h --write-candidates /home/liteul/phd/JOINT_FIELDS/sCandidates
+
+m4opt animate-multi /home/liteul/phd/JOINT_FIELDS/S251118cm_rubin.ecsv /home/liteul/phd/JOINT_FIELDS/S251118cm_ztf.ecsv \
+--time-step 20min --still /home/liteul/phd/JOINT_FIELDS/S251118cm.pdf --dpi 100 \
+--output /home/liteul/phd/JOINT_FIELDS/S251118cm.gif --inset-center "202d 5d" --inset-radius 20deg
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/sCandidates_rubin.npz --schedule /home/liteul/phd/JOINT_FIELDS/S251118cm_rubin.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_gwRub.png
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/sCandidates_ztf.npz --schedule /home/liteul/phd/JOINT_FIELDS/S251118cm_ztf.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_gwZTF.png
+
+m4opt schedule-multi /home/liteul/phd/m4opt_nb_work/skymaps/bayestar.multiorder.fits /home/liteul/phd/JOINT_FIELDS/S251118cm2 \
+--write-model /home/liteul/phd/JOINT_FIELDS/model_toy.lp --event-time 2026-04-21T05:00:00 --exptime-min 300s --bandpass r \
+--mission-names ztf --mission-names rubin --deadline 2h --write-candidates /home/liteul/phd/JOINT_FIELDS/sCandidates2
+
+m4opt animate-multi /home/liteul/phd/JOINT_FIELDS/S251118cm2_rubin.ecsv /home/liteul/phd/JOINT_FIELDS/S251118cm2_ztf.ecsv \
+--time-step 20min --still /home/liteul/phd/JOINT_FIELDS/S251118cm2.pdf --dpi 100 \
+--output /home/liteul/phd/JOINT_FIELDS/S251118cm2.gif
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/sCandidates2_rubin.npz --schedule /home/liteul/phd/JOINT_FIELDS/S251118cm2_rubin.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_gwRub2.png
+
+python /home/liteul/phd/low_proba_issue/plot_candidate_fields.py --candidates /home/liteul/phd/JOINT_FIELDS/sCandidates2_ztf.npz --schedule /home/liteul/phd/JOINT_FIELDS/S251118cm2_ztf.ecsv --output /home/liteul/phd/JOINT_FIELDS/candidate_fields_gwZTF2.png
+
+m4opt animate-multi /home/liteul/phd/JOINT_FIELDS/schedule_toy_north.ecsv /home/liteul/phd/JOINT_FIELDS/schedule_toy_south.ecsv \
+--time-step 20min --still /home/liteul/phd/JOINT_FIELDS/toy.pdf --dpi 100 \
+--output /home/liteul/phd/JOINT_FIELDS/toy.gif --inset-center "202d 5d" --inset-radius 23deg
+
+------------------------overlap test------------------------------
+python /home/liteul/phd/low_proba_issue/plot_candidates_multi \
+    --candidates /home/liteul/phd/overlap_test/w_0.75/candidates_rubin.npz /home/liteul/phd/overlap_test/w_0.75/candidates_ztf.npz /home/liteul/phd/overlap_test/w_0.75/candidates_toy_north.npz /home/liteul/phd/overlap_test/w_0.75/candidates_toy_south.npz \
+    --schedule /home/liteul/phd/overlap_test/w_0.75/schedule_rubin.ecsv /home/liteul/phd/overlap_test/w_0.75/schedule_ztf.ecsv /home/liteul/phd/overlap_test/w_0.75/schedule_toy_north.ecsv /home/liteul/phd/overlap_test/w_0.75/schedule_toy_south.ecsv \
+    --labels Rubin ZTF toy_north toy_south
+
+    python /home/liteul/phd/low_proba_issue/plot_candidates_multi \
+    --candidates /home/liteul/phd/JOINT_FIELDS/candidates_toy_south.npz /home/liteul/phd/JOINT_FIELDS/candidates_toy_north.npz \
+    --schedule /home/liteul/phd/JOINT_FIELDS/schedule_toy_south.ecsv /home/liteul/phd/JOINT_FIELDS/schedule_toy_north.ecsv \
+    --labels toy_south toy_north --output /home/liteul/phd/JOINT_FIELDS/candidat_TOY.png
+
+----------------------------------constraints test-------------------
+m4opt animate /home/liteul/phd/m4opt_copy/constraint_test/schedule_T6_galactic_plane.ecsv --time-step 1h --still /home/liteul/phd/m4opt_copy/constraint_test/T6.pdf --dpi 180 --output /home/liteul/phd/m4opt_copy/constraint_test/T6.gif
+
+----------------------------------fields id tests--------------------
+m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn261013582.fit /home/liteul/phd/events/GCN261013/sch_fields.ecsv \
+--mission ztf --deadline 76min  --time-step 1.0min --event-time 2026-10-14T10:41:00 --timelimit 1000s \
+--bandpass g --bandpass r --visits 2 --nside 512 --max-fields 50 --jobs 0 \
+--write-progress /home/liteul/phd/events/GCN261013/PROGRESS.ecsv --exptime-min 300s --exptime-min 300s \
+--write-model /home/liteul/phd/events/GCN261013/MODEL_thom_2v.lp --field_idx 466 517 518 519 569
+
+m4opt animate /home/liteul/phd/events/GCN261013/sch_fields.ecsv --time-step 5min --still /home/liteul/phd/events/GCN261013/fields.pdf --dpi 180 --output /home/liteul/phd/events/GCN261013/fields.gif
