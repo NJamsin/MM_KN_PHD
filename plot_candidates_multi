@@ -1,0 +1,234 @@
+#!/usr/bin/env python
+"""Plot candidate Rubin fields and scheduled fields for one or several telescopes.
+
+Exemple (2 télescopes) :
+    python plot_candidate_fields_multi.py \
+        --candidates cand_rubin.npz cand_tel2.npz \
+        --schedule sched_rubin.ecsv sched_tel2.ecsv \
+        --labels Rubin Tel2
+"""
+
+import argparse
+from itertools import cycle
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+from astropy.coordinates import ICRS
+from astropy.table import QTable
+from astropy_healpix import HEALPix
+
+# (candidate footprints, candidate centers, scheduled footprints, scheduled centers)
+PALETTES = [
+    ("cornflowerblue", "navy", "crimson", "darkred"),
+    ("mediumseagreen", "darkgreen", "darkorange", "saddlebrown"),
+    ("plum", "purple", "gold", "darkgoldenrod"),
+    ("lightgray", "black", "deeppink", "maroon"),
+]
+CAND_MARKERS = ["x", "+", "1", "2"]
+SCHED_MARKERS = ["o", "s", "^", "D"]
+
+
+def load_telescope(candidates_path, schedule_path):
+    candidates = np.load(candidates_path)
+    schedule = QTable.read(schedule_path, format="ascii.ecsv")
+
+    field_ids = candidates["field_id"]
+    offsets = candidates["footprint_offsets"]
+    pixels = candidates["footprint_pixels"]
+    if len(offsets) != len(field_ids) + 1 or offsets[-1] != len(pixels):
+        raise ValueError(
+            f"Candidate footprint offsets do not match the candidate data ({candidates_path})"
+        )
+
+    observations = schedule[schedule["action"] == "observe"]
+    scheduled_ids = np.unique(observations["field_id"])
+    scheduled_mask = np.isin(field_ids, scheduled_ids)
+    missing_ids = np.setdiff1d(scheduled_ids, field_ids)
+    if len(missing_ids):
+        raise ValueError(
+            f"Schedule {schedule_path} contains fields missing from the candidate "
+            f"export: {missing_ids.tolist()}"
+        )
+
+    all_footprints = [
+        pixels[offsets[i] : offsets[i + 1]] for i in range(len(field_ids))
+    ]
+    candidate_pixels = np.unique(np.concatenate(all_footprints))
+    scheduled_footprints = [
+        fp for fp, sel in zip(all_footprints, scheduled_mask) if sel
+    ]
+    scheduled_pixels = (
+        np.unique(np.concatenate(scheduled_footprints))
+        if scheduled_footprints
+        else np.asarray([], dtype=np.intp)
+    )
+
+    hpx = HEALPix(
+        nside=int(candidates["nside"]),
+        frame=ICRS(),
+        order=str(candidates["order"]),
+    )
+    return {
+        "ra": np.asarray(candidates["ra_deg"]),
+        "dec": np.asarray(candidates["dec_deg"]),
+        "n_fields": len(field_ids),
+        "scheduled_mask": scheduled_mask,
+        "n_scheduled": int(np.count_nonzero(scheduled_mask)),
+        "n_obs": len(observations),
+        "candidate_coords": hpx.healpix_to_skycoord(candidate_pixels),
+        "scheduled_coords": hpx.healpix_to_skycoord(scheduled_pixels),
+        "has_scheduled": len(scheduled_pixels) > 0,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--candidates",
+        type=Path,
+        nargs="+",
+        default=[Path(__file__).with_name("candidates_rubin_100fields_test.npz")],
+        help="Un export de candidats par télescope (--write-candidates)",
+    )
+    parser.add_argument(
+        "--schedule",
+        type=Path,
+        nargs="+",
+        default=[
+            Path(__file__).with_name("schedule_rubin_100fields_candidates_test.ecsv")
+        ],
+        help="Un schedule ECSV (m4opt) par télescope, même ordre que --candidates",
+    )
+    parser.add_argument(
+        "--labels",
+        nargs="+",
+        default=None,
+        help="Nom de chaque télescope (défaut: Telescope 1, 2, ...)",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path(__file__).with_name("candidate_fields.png"),
+        help="Output image path",
+    )
+    args = parser.parse_args()
+
+    n_tel = len(args.candidates)
+    if len(args.schedule) != n_tel:
+        parser.error("--candidates et --schedule doivent avoir le même nombre d'éléments")
+    labels = args.labels or [f"Telescope {i + 1}" for i in range(n_tel)]
+    if len(labels) != n_tel:
+        parser.error("--labels doit avoir autant d'éléments que --candidates")
+
+    tels = [load_telescope(c, s) for c, s in zip(args.candidates, args.schedule)]
+
+    # Centre commun en RA (moyenne circulaire sur tous les télescopes)
+    all_ra = np.concatenate([t["ra"] for t in tels])
+    ra_center = np.arctan2(
+        np.sin(np.deg2rad(all_ra)).mean(), np.cos(np.deg2rad(all_ra)).mean()
+    )
+
+    def local_x(ra_deg):
+        return np.rad2deg(
+            (np.deg2rad(ra_deg) - ra_center + np.pi) % (2 * np.pi) - np.pi
+        )
+
+    # Limites communes aux deux panneaux (les schedulés sont inclus dans les candidats)
+    x_values = np.concatenate([local_x(t["candidate_coords"].ra.deg) for t in tels])
+    y_values = np.concatenate([t["candidate_coords"].dec.deg for t in tels])
+    x_margin = max(np.ptp(x_values) * 0.08, 0.1)
+    y_margin = max(np.ptp(y_values) * 0.08, 0.1)
+    xlim = (x_values.max() + x_margin, x_values.min() - x_margin)  # RA croît vers la gauche
+    ylim = (y_values.min() - y_margin, y_values.max() + y_margin)
+
+    fig, (ax_candidates, ax_scheduled) = plt.subplots(1, 2, figsize=(15, 7.5))
+
+    for i, (tel, label, palette) in enumerate(zip(tels, labels, cycle(PALETTES))):
+        cand_fp, cand_c, sched_fp, sched_c = palette
+        mask = tel["scheduled_mask"]
+        cand_marker = CAND_MARKERS[i % len(CAND_MARKERS)]
+        sched_marker = SCHED_MARKERS[i % len(SCHED_MARKERS)]
+
+        # --- Panneau candidats ---
+        ax_candidates.scatter(
+            local_x(tel["candidate_coords"].ra.deg),
+            tel["candidate_coords"].dec.deg,
+            s=1.2,
+            color=cand_fp,
+            alpha=0.55,
+            linewidths=0,
+            rasterized=True,
+            label=f"{label} – candidate footprints",
+        )
+        ax_candidates.scatter(
+            local_x(tel["ra"]),
+            tel["dec"],
+            marker=cand_marker,
+            s=18,
+            color=cand_c,
+            linewidths=0.8,
+            label=f"{label} – candidate centers",
+        )
+
+        # --- Panneau schedulés ---
+        if tel["has_scheduled"]:
+            ax_scheduled.scatter(
+                local_x(tel["scheduled_coords"].ra.deg),
+                tel["scheduled_coords"].dec.deg,
+                s=1.2,
+                color=sched_fp,
+                alpha=0.6,
+                linewidths=0,
+                rasterized=True,
+                label=f"{label} – scheduled footprints ({tel['n_scheduled']} fields)",
+            )
+        ax_scheduled.scatter(
+            local_x(tel["ra"][mask]),
+            tel["dec"][mask],
+            marker=sched_marker,
+            s=24,
+            facecolors="none",
+            edgecolors=sched_c,
+            linewidths=1.0,
+            label=f"{label} – scheduled centers",
+        )
+
+    total_cand = sum(t["n_fields"] for t in tels)
+    total_sched = sum(t["n_scheduled"] for t in tels)
+
+    for ax, title in (
+        (ax_candidates, f"All candidate fields ({total_cand})"),
+        (ax_scheduled, f"Scheduled fields ({total_sched})"),
+    ):
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
+        ax.set_aspect("equal", adjustable="box")
+        ax.set_xlabel(r"$\Delta$RA from candidate-field center (deg)")
+        ax.set_ylabel("Declination (deg)")
+        ax.grid(True, alpha=0.35)
+        ax.set_title(title)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.12), ncol=1, fontsize=8,
+                  markerscale=6)
+
+    fig.suptitle(
+        " | ".join(
+            f"{label}: {t['n_fields']} candidates, {t['n_scheduled']} scheduled"
+            for label, t in zip(labels, tels)
+        )
+    )
+    fig.tight_layout()
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(args.output, dpi=200, bbox_inches="tight")
+    print(f"Saved plot to {args.output}")
+    for label, t in zip(labels, tels):
+        print(f"[{label}] Candidate fields: {t['n_fields']}")
+        print(f"[{label}] Scheduled fields: {t['n_scheduled']}")
+        print(
+            f"[{label}] Scheduled observations (including repeated visits): {t['n_obs']}"
+        )
+    plt.close(fig)
+
+
+if __name__ == "__main__":
+    main()

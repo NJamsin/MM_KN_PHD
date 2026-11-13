@@ -183,3 +183,20 @@ From the results of ZTF and Rubin, the larger the FOV of a mission is, the less 
 - `fake_gaussian_30.fits`: input sky map.
 - `schedule_*.ecsv`: generated schedules and solver metadata.
 - `rubin*.gif`, `ztf*.gif` and matching PDFs: schedule and coverage visualizations for the tested configurations.
+
+
+```bash
+python \
+  -m m4opt._cli.schedule_candidates schedule \
+  fake_gaussian_30.fits schedule_rubin_300.ecsv \
+  --mission rubin \
+  --bandpass r \
+  --exptime-min 300s \
+  --event-time 2026-04-21T04:00:00 \
+  --deadline 6h \
+  --visits 1 \
+  --nside 512 \
+  --max-fields 300 \
+  --timelimit 15min \
+  --write-candidates candidates_rubin_300.npz
+```
