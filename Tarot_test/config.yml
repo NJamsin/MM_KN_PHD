@@ -1,0 +1,18 @@
+default:
+  deadline: 1 d
+  skygrid: sinusoidal
+
+tre:
+  bandpass: tre_clear
+  exptime_min: 180 s
+  max_fields: 100
+
+tch:
+  bandpass: r
+  exptime_min: 150 s
+  max_fields: 150
+
+tca:
+  bandpass: r
+  exptime_min: 150 s
+  max_fields: 150

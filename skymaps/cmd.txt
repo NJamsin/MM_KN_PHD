@@ -348,3 +348,259 @@ m4opt schedule /home/liteul/phd/m4opt_nb_work/skymaps/glg_healpix_all_bn26101358
 --write-model /home/liteul/phd/events/GCN261013/MODEL_thom_2v.lp --field_idx 466 517 518 519 569
 
 m4opt animate /home/liteul/phd/events/GCN261013/sch_fields.ecsv --time-step 5min --still /home/liteul/phd/events/GCN261013/fields.pdf --dpi 180 --output /home/liteul/phd/events/GCN261013/fields.gif
+
+------------------------------mono tel multi run comparison-----------------
+m4opt schedule /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/Compare_mono_multi/ztf.ecsv \
+--mission ztf --deadline 4h  --time-step 1.0min --event-time 2026-04-21T04:00:00 --timelimit 1000s \
+--bandpass g --bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 --exptime-min 300s --exptime-min 300s 
+
+m4opt animate /Users/jamsin/phd/events/Compare_mono_multi/ztf.ecsv --time-step 10min --still /Users/jamsin/phd/events/Compare_mono_multi/mono.pdf --dpi 180 /Users/jamsin/phd/events/Compare_mono_multi/mono.gif
+
+m4opt schedule-multi /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/Compare_mono_multi/ow1 \
+--mission-names ztf --deadline 4h  --time-step 1.0min --event-time 2026-04-21T04:00:00 --timelimit 1000s \
+--bandpass g --bandpass r --visits 1 --nside 512 --max-fields 50 --jobs 0 --exptime-min 300s --exptime-min 300s --overlap-weight 1 --write-candidates ow1
+
+# animate-multi needs at least two schedules
+m4opt animate /Users/jamsin/phd/events/Compare_mono_multi/ow0_ztf.ecsv --time-step 10min --still /Users/jamsin/phd/events/Compare_mono_multi/ow0.pdf --dpi 180 /Users/jamsin/phd/events/Compare_mono_multi/ow0.gif
+m4opt animate /Users/jamsin/phd/events/Compare_mono_multi/ow1_ztf.ecsv --time-step 10min --still /Users/jamsin/phd/events/Compare_mono_multi/ow1.pdf --dpi 180 /Users/jamsin/phd/events/Compare_mono_multi/ow1.gif
+
+# plot candidates
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+        --candidates /Users/jamsin/phd/events/Compare_mono_multi/ow0_ztf.npz /Users/jamsin/phd/events/Compare_mono_multi/ow1_ztf.npz \
+        --schedule /Users/jamsin/phd/events/Compare_mono_multi/ow0_ztf.ecsv /Users/jamsin/phd/events/Compare_mono_multi/ow1_ztf.ecsv \
+        --labels OW0 OW1 --output /Users/jamsin/phd/events/Compare_mono_multi/ow0VS1.png
+
+---------overlap rubin ztf-----------------
+python /Users/jamsin/phd/overlap/run_overlap_tests.py \
+/Users/jamsin/phd/overlap/rub_ztf /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits --overwrite
+
+python /Users/jamsin/phd/overlap/analyze_overlap.py \
+--root /Users/jamsin/phd/overlap/rub_ztf --skymap /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits 
+
+
+-------short grb fritz---------
+m4opt schedule /Users/jamsin/phd/events/skymaps/fermi_261118.fit /Users/jamsin/phd/events/GRB261118/ztf2.ecsv \
+--mission ztf --deadline 210min  --time-step 1.0min --event-time 2026-11-19T07:00:00 --timelimit 1000s \
+--bandpass g --bandpass r --visits 2 --nside 512 --max-fields 50 --jobs 0 --exptime-min 300s
+
+m4opt animate /Users/jamsin/phd/events/GRB261118/ztf_1.ecsv --time-step 10min --still /Users/jamsin/phd/events/GRB261118/ztf1.pdf --dpi 180 /Users/jamsin/phd/events/GRB261118/ztf1.gif
+
+m4opt schedule /Users/jamsin/phd/events/skymaps/fermi_261118.fit /Users/jamsin/phd/events/GRB261118/ztf_1.ecsv \
+--mission ztf --deadline 210min  --time-step 1.0min --event-time 2026-11-19T07:00:00 --timelimit 1000s \
+--bandpass g --visits 1 --nside 512 --max-fields 50 --jobs 0 --exptime-min 300s
+
+
+m4opt schedule /Users/jamsin/phd/events/skymaps/2026-11-18T01-50-37_283.41000_56.90000_10.38000.fits /Users/jamsin/phd/events/Fermi_fritz/ztf.ecsv \
+--mission ztf --deadline 210min  --time-step 1.0min --event-time 2026-11-19T03:00:00 --timelimit 1000s \
+--bandpass g --bandpass r --bandpass g --visits 2 --nside 512 --max-fields 50 --jobs 0 --exptime-min 300s
+
+m4opt animate /Users/jamsin/phd/events/Fermi_fritz/ztf.ecsv --time-step 10min --still /Users/jamsin/phd/events/Fermi_fritz/ztf.pdf --dpi 180 /Users/jamsin/phd/events/Fermi_fritz/ztf1.gif
+
+
+-------test m4opt schedule network--------------
+test skymap OG
+m4opt schedule-multi /Users/jamsin/phd/events/skymaps/bayestar.multiorder.fits /Users/jamsin/phd/events/network_test/multi \
+--event-time 2026-04-21T05:00:00 --exptime-min 300s --bandpass r \
+--mission-names ztf --mission-names rubin --deadline 2h --write-candidates /Users/jamsin/phd/events/network_test/gnegnegne
+
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/bayestar.multiorder.fits /Users/jamsin/phd/events/network_test/network \
+--event-time 2026-04-21T05:00:00 --exptime-min 300s --bandpass r \
+--network ground --deadline 2h --write-candidates /Users/jamsin/phd/events/network_test/plot_candidates_multi
+
+m4opt animate-multi /Users/jamsin/phd/events/network_test/multi_rubin.ecsv /Users/jamsin/phd/events/network_test/multi_ztf.ecsv \
+--time-step 20min --still /Users/jamsin/phd/events/network_test/multi.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/network_test/multi.gif
+
+m4opt animate-multi /Users/jamsin/phd/events/network_test/network_rubin.ecsv /Users/jamsin/phd/events/network_test/network_ztf.ecsv \
+--time-step 20min --still /Users/jamsin/phd/events/network_test/network.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/network_test/network.gif
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/network_test/gnegnegne_rubin.npz /Users/jamsin/phd/events/network_test/net_1.npz \
+--schedule /Users/jamsin/phd/events/network_test/multi_rubin.ecsv /Users/jamsin/phd/events/network_test/network_rubin.ecsv \
+--labels multi network --output /Users/jamsin/phd/events/network_test/cand_rub.png
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/network_test/gnegnegne_ztf.npz /Users/jamsin/phd/events/network_test/net_2.npz \
+--schedule /Users/jamsin/phd/events/network_test/multi_ztf.ecsv /Users/jamsin/phd/events/network_test/network_ztf.ecsv \
+--labels multi network --output /Users/jamsin/phd/events/network_test/cand_ztf.png
+
+test skymap Gaussienne
+m4opt schedule-multi /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/network_test/multi \
+--event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--mission-names rubin --mission-names ztf --deadline 4h --write-candidates /Users/jamsin/phd/events/network_test/multi
+
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/network_test/network \
+--event-time 2026-04-21T04:00:00 --exptime-min 300s --bandpass r \
+--network ground --deadline 4h --write-candidates /Users/jamsin/phd/events/network_test/network
+
+m4opt animate-multi /Users/jamsin/phd/events/network_test/multi_rubin.ecsv /Users/jamsin/phd/events/network_test/multi_ztf.ecsv \
+--time-step 20min --still /Users/jamsin/phd/events/network_test/multi_gaus.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/network_test/multi_gaus.gif
+
+m4opt animate-multi /Users/jamsin/phd/events/network_test/network_rubin.ecsv /Users/jamsin/phd/events/network_test/network_ztf.ecsv \
+--time-step 20min --still /Users/jamsin/phd/events/network_test/network_gaus.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/network_test/network_gaus.gif
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/network_test/multi_rubin.npz /Users/jamsin/phd/events/network_test/network_rubin.npz \
+--schedule /Users/jamsin/phd/events/network_test/multi_rubin.ecsv /Users/jamsin/phd/events/network_test/network_rubin.ecsv \
+--labels multi network --output /Users/jamsin/phd/events/network_test/cand_rub_gauss.png
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/network_test/multi_ztf.npz /Users/jamsin/phd/events/network_test/network_ztf.npz \
+--schedule /Users/jamsin/phd/events/network_test/multi_ztf.ecsv /Users/jamsin/phd/events/network_test/network_ztf.ecsv \
+--labels multi network --output /Users/jamsin/phd/events/network_test/cand_ztf_gaus.png
+
+test avec le network plus poussé
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/network_config_test/config1 \
+--event-time 2026-04-21T04:00:00 --config  /Users/jamsin/phd/events/network_config_test/config1.yml \
+--network ground --write-candidates /Users/jamsin/phd/events/network_config_test/config1
+
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/network_config_test/config2 \
+--event-time 2026-04-21T04:00:00 --config  /Users/jamsin/phd/events/network_config_test/config2.yml \
+--network ground --write-candidates /Users/jamsin/phd/events/network_config_test/config2
+
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/network_config_test/config3 \
+--event-time 2026-04-21T04:00:00 --config  /Users/jamsin/phd/events/network_config_test/config3.yml \
+--network ground --write-candidates /Users/jamsin/phd/events/network_config_test/config3
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/network_config_test/config1_rubin.npz /Users/jamsin/phd/events/network_config_test/config2_rubin.npz /Users/jamsin/phd/events/network_config_test/config3_rubin.npz \
+--schedule /Users/jamsin/phd/events/network_config_test/config1_rubin.ecsv /Users/jamsin/phd/events/network_config_test/config2_rubin.ecsv /Users/jamsin/phd/events/network_config_test/config3_rubin.ecsv \
+--labels 1 2 3 --output /Users/jamsin/phd/events/network_config_test/cand_rub.png
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/network_config_test/config1_ztf.npz /Users/jamsin/phd/events/network_config_test/config2_ztf.npz /Users/jamsin/phd/events/network_config_test/config3_ztf.npz \
+--schedule /Users/jamsin/phd/events/network_config_test/config1_ztf.ecsv /Users/jamsin/phd/events/network_config_test/config2_ztf.ecsv /Users/jamsin/phd/events/network_config_test/config3_ztf.ecsv \
+--labels 1 2 3 --output /Users/jamsin/phd/events/network_config_test/cand_ztf.png
+
+m4opt animate-multi /Users/jamsin/phd/events/network_config_test/config1_ztf.ecsv /Users/jamsin/phd/events/network_config_test/config1_rubin.ecsv \
+--time-step 20min --still /Users/jamsin/phd/events/network_config_test/config1.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/network_config_test/config1.gif
+
+m4opt animate-multi /Users/jamsin/phd/events/network_config_test/config2_ztf.ecsv /Users/jamsin/phd/events/network_config_test/config2_rubin.ecsv \
+--time-step 20min --still /Users/jamsin/phd/events/network_config_test/config2.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/network_config_test/config2.gif
+
+m4opt animate-multi /Users/jamsin/phd/events/network_config_test/config3_ztf.ecsv /Users/jamsin/phd/events/network_config_test/config3_rubin.ecsv \
+--time-step 20min --still /Users/jamsin/phd/events/network_config_test/config3.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/network_config_test/config3.gif
+
+
+----------tarot test-------------
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/Tarot_test/ow_75 \
+--event-time 2026-04-21T13:00:00 --config /Users/jamsin/phd/events/Tarot_test/config.yml \
+--network tarot --write-candidates /Users/jamsin/phd/events/Tarot_test/candidates_75 \
+--preselection-method pixel --overlap-weight 0.75
+
+m4opt animate-multi /Users/jamsin/phd/events/Tarot_test/ow_75_tre.ecsv /Users/jamsin/phd/events/Tarot_test/ow_75_tch.ecsv /Users/jamsin/phd/events/Tarot_test/ow_75_tca.ecsv \
+--time-step 1h --still /Users/jamsin/phd/events/Tarot_test/ow_75.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/Tarot_test/ow_75.gif
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/Tarot_test/candidates_75_tre.npz /Users/jamsin/phd/events/Tarot_test/candidates_75_tch.npz /Users/jamsin/phd/events/Tarot_test/candidates_75_tca.npz \
+--schedule /Users/jamsin/phd/events/Tarot_test/ow_75_tre.ecsv /Users/jamsin/phd/events/Tarot_test/ow_75_tch.ecsv /Users/jamsin/phd/events/Tarot_test/ow_75_tca.ecsv \
+--labels tre tch tca --output /Users/jamsin/phd/events/Tarot_test/ow_75.png
+
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/Tarot_test/ow_1 \
+--event-time 2026-04-21T13:00:00 --config /Users/jamsin/phd/events/Tarot_test/config.yml \
+--network tarot --write-candidates /Users/jamsin/phd/events/Tarot_test/candidates_1 \
+--preselection-method pixel --overlap-weight 1
+
+m4opt animate-multi /Users/jamsin/phd/events/Tarot_test/ow_1_tre.ecsv /Users/jamsin/phd/events/Tarot_test/ow_1_tch.ecsv /Users/jamsin/phd/events/Tarot_test/ow_1_tca.ecsv \
+--time-step 1h --still /Users/jamsin/phd/events/Tarot_test/ow_1.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/Tarot_test/ow_1.gif
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/Tarot_test/candidates_1_tre.npz /Users/jamsin/phd/events/Tarot_test/candidates_1_tch.npz /Users/jamsin/phd/events/Tarot_test/candidates_1_tca.npz \
+--schedule /Users/jamsin/phd/events/Tarot_test/ow_1_tre.ecsv /Users/jamsin/phd/events/Tarot_test/ow_1_tch.ecsv /Users/jamsin/phd/events/Tarot_test/ow_1_tca.ecsv \
+--labels tre tch tca --output /Users/jamsin/phd/events/Tarot_test/ow_1.png
+
+------------toy non overlap test--------------
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/non_overlap_toy/no_ow1 \
+--event-time 2026-04-21T04:00:00 --config /Users/jamsin/phd/events/non_overlap_toy/config_no.yml \
+--network toy --write-candidates /Users/jamsin/phd/events/non_overlap_toy/no_1 \
+--preselection-method pixel --overlap-weight 1
+
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/non_overlap_toy/yes_ow1 \
+--event-time 2026-04-21T04:00:00 --config /Users/jamsin/phd/events/non_overlap_toy/config_yes.yml \
+--network toy --write-candidates /Users/jamsin/phd/events/non_overlap_toy/yes_1 \
+--preselection-method pixel --overlap-weight 1
+
+m4opt animate-multi /Users/jamsin/phd/events/non_overlap_toy/yes_ow1_toy_north.ecsv /Users/jamsin/phd/events/non_overlap_toy/yes_ow1_toy_south.ecsv \
+--time-step 30min --still /Users/jamsin/phd/events/non_overlap_toy/yes_ow1.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/non_overlap_toy/yes_ow1.gif
+
+m4opt animate-multi /Users/jamsin/phd/events/non_overlap_toy/no_ow1_toy_north.ecsv /Users/jamsin/phd/events/non_overlap_toy/no_ow1_toy_south.ecsv \
+--time-step 30min --still /Users/jamsin/phd/events/non_overlap_toy/no_ow1.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/non_overlap_toy/no_ow1.gif
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/non_overlap_toy/yes_1_toy_north.npz /Users/jamsin/phd/events/non_overlap_toy/yes_1_toy_south.npz \
+--schedule /Users/jamsin/phd/events/non_overlap_toy/yes_ow1_toy_north.ecsv /Users/jamsin/phd/events/non_overlap_toy/yes_ow1_toy_south.ecsv \
+--labels north south --output /Users/jamsin/phd/events/non_overlap_toy/yes_ow1.png
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/non_overlap_toy/no_1_toy_north.npz /Users/jamsin/phd/events/non_overlap_toy/no_1_toy_south.npz \
+--schedule /Users/jamsin/phd/events/non_overlap_toy/no_ow1_toy_north.ecsv /Users/jamsin/phd/events/non_overlap_toy/no_ow1_toy_south.ecsv \
+--labels north south --output /Users/jamsin/phd/events/non_overlap_toy/no_ow1.png
+
+
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/non_overlap_toy/no_ow0 \
+--event-time 2026-04-21T04:00:00 --config /Users/jamsin/phd/events/non_overlap_toy/config_no.yml \
+--network toy --write-candidates /Users/jamsin/phd/events/non_overlap_toy/no_0 \
+--preselection-method pixel --overlap-weight 0
+
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/events/non_overlap_toy/yes_ow0 \
+--event-time 2026-04-21T04:00:00 --config /Users/jamsin/phd/events/non_overlap_toy/config_yes.yml \
+--network toy --write-candidates /Users/jamsin/phd/events/non_overlap_toy/yes_0 \
+--preselection-method pixel --overlap-weight 0
+
+m4opt animate-multi /Users/jamsin/phd/events/non_overlap_toy/yes_ow0_toy_north.ecsv /Users/jamsin/phd/events/non_overlap_toy/yes_ow0_toy_south.ecsv \
+--time-step 30min --still /Users/jamsin/phd/events/non_overlap_toy/yes_ow0.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/non_overlap_toy/yes_ow0.gif
+
+m4opt animate-multi /Users/jamsin/phd/events/non_overlap_toy/no_ow0_toy_north.ecsv /Users/jamsin/phd/events/non_overlap_toy/no_ow0_toy_south.ecsv \
+--time-step 30min --still /Users/jamsin/phd/events/non_overlap_toy/no_ow0.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/non_overlap_toy/no_ow0.gif
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/non_overlap_toy/yes_0_toy_north.npz /Users/jamsin/phd/events/non_overlap_toy/yes_0_toy_south.npz \
+--schedule /Users/jamsin/phd/events/non_overlap_toy/yes_ow0_toy_north.ecsv /Users/jamsin/phd/events/non_overlap_toy/yes_ow0_toy_south.ecsv \
+--labels north south --output /Users/jamsin/phd/events/non_overlap_toy/yes_ow0.png
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/non_overlap_toy/no_0_toy_north.npz /Users/jamsin/phd/events/non_overlap_toy/no_0_toy_south.npz \
+--schedule /Users/jamsin/phd/events/non_overlap_toy/no_ow0_toy_north.ecsv /Users/jamsin/phd/events/non_overlap_toy/no_ow0_toy_south.ecsv \
+--labels north south --output /Users/jamsin/phd/events/non_overlap_toy/no_ow0.png
+
+-------------TAROT GW------------
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/bayestar.multiorder.fits /Users/jamsin/phd/events/Tarot_test/GW \
+--event-time 2026-04-21T13:00:00 --config /Users/jamsin/phd/events/Tarot_test/config.yml \
+--network tarot --write-candidates /Users/jamsin/phd/events/Tarot_test/candidates_gw \
+--preselection-method pixel --overlap-weight 0
+
+m4opt animate-multi /Users/jamsin/phd/events/Tarot_test/GW_tre.ecsv /Users/jamsin/phd/events/Tarot_test/GW_tch.ecsv /Users/jamsin/phd/events/Tarot_test/GW_tca.ecsv \
+--time-step 1h --still /Users/jamsin/phd/events/Tarot_test/gw.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/Tarot_test/gw.gif
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/Tarot_test/candidates_gw_tre.npz /Users/jamsin/phd/events/Tarot_test/candidates_gw_tch.npz /Users/jamsin/phd/events/Tarot_test/candidates_gw_tca.npz \
+--schedule /Users/jamsin/phd/events/Tarot_test/GW_tre.ecsv /Users/jamsin/phd/events/Tarot_test/GW_tch.ecsv /Users/jamsin/phd/events/Tarot_test/GW_tca.ecsv \
+--labels tre tch tca --output /Users/jamsin/phd/events/Tarot_test/candidates_gw.png
+
+---------------updated m4opt test--------------
+m4opt schedule-network /Users/jamsin/phd/events/skymaps/bayestar.multiorder.fits /Users/jamsin/phd/events/new_ver_test/GW \
+--event-time 2026-04-21T13:00:00 --config /Users/jamsin/phd/events/Tarot_test/config.yml \
+--network tarot --write-candidates /Users/jamsin/phd/events/new_ver_test/candidates_gw \
+--preselection-method pixel --overlap-weight 0
+
+m4opt animate-multi /Users/jamsin/phd/events/new_ver_test/GW_tre.ecsv /Users/jamsin/phd/events/new_ver_test/GW_tch.ecsv /Users/jamsin/phd/events/new_ver_test/GW_tca.ecsv \
+--time-step 1h --still /Users/jamsin/phd/events/new_ver_test/gw.pdf --dpi 180 \
+--output /Users/jamsin/phd/events/new_ver_test/gw.gif
+
+python /Users/jamsin/phd/low_proba_issue/plot_candidates_multi.py \
+--candidates /Users/jamsin/phd/events/new_ver_test/candidates_gw_tre.npz /Users/jamsin/phd/events/new_ver_test/candidates_gw_tch.npz /Users/jamsin/phd/events/new_ver_test/candidates_gw_tca.npz \
+--schedule /Users/jamsin/phd/events/new_ver_test/GW_tre.ecsv /Users/jamsin/phd/events/new_ver_test/GW_tch.ecsv /Users/jamsin/phd/events/new_ver_test/GW_tca.ecsv \
+--labels tre tch tca --output /Users/jamsin/phd/events/new_ver_test/candidates_gw.png

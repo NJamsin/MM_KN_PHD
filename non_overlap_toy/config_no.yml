@@ -1,0 +1,6 @@
+default:
+  deadline: 6 h
+  max_fields: 50
+  skygrid: rectangular
+  bandpass: r
+  exptime_min: 300 s

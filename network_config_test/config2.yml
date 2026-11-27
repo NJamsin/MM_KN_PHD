@@ -1,0 +1,11 @@
+default:
+  deadline: 6 h
+  max_fields: 50
+
+rubin:
+  bandpass: i
+  exptime_min: 30 s
+
+ztf:
+  bandpass: g
+  exptime_min: 300 s
