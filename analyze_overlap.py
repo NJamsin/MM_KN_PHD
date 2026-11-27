@@ -18,14 +18,33 @@ from astropy_healpix import HEALPix
 from ligo.skymap.bayestar import rasterize
 from ligo.skymap.io import read_sky_map
 
+import re
+from pathlib import Path
 
-WEIGHTS = np.arange(0.0,1.05,0.05)
-WEIGHTS2 = np.array([0.7 + i/100 for i in range(31)])
-WEIGHTS = np.unique(np.concatenate((WEIGHTS, WEIGHTS2)))
-MISSIONS = ("toy_north", 
-            "toy_south", 
-            #"rubin", 
-            #"ztf"
+_PATTERN = re.compile(r"^w_(\d\.\d{2})$")
+
+def parse_weights(path, as_decimal=False):
+    """Liste triée des poids X.XX extraits des sous-dossiers 'w_X.XX' de `path`."""
+    from decimal import Decimal
+    convert = Decimal if as_decimal else float
+
+    weights = []
+    for d in Path(path).iterdir():
+        if not d.is_dir():
+            continue
+        m = _PATTERN.match(d.name)
+        if m:
+            weights.append(convert(m.group(1)))
+    return sorted(weights)
+
+
+#WEIGHTS = np.arange(0.0,1.05,0.05)
+#WEIGHTS2 = np.array([0.7 + i/100 for i in range(31)])
+#WEIGHTS = np.unique(np.concatenate((WEIGHTS, WEIGHTS2)))
+MISSIONS = (#"toy_north", 
+            #"toy_south", 
+            "rubin", 
+            "ztf"
 )
 MISSION_COLORS = {
     "toy_north": "tab:blue",
@@ -392,18 +411,16 @@ def _write_gap_probability_figure(rows, output):
 
 def _write_metrics_figure(rows, output):
     weights = [row["overlap_weight"] for row in rows]
-    fig, ax = plt.subplots(1, 1, figsize=(12, 4.8))
+    fig, ax = plt.subplots(1, 1, figsize=(10, 4.8))
 
     ax.plot(
         weights,
         [100 * row["scheduled_unique_probability"] for row in rows],
-        "o-",
         label="Planned-field union",
     )
     ax.plot(
         weights,
         [100 * row["candidate_union_probability"] for row in rows],
-        "s--",
         label="Preplanned candidate union",
     )
     ax.plot(
@@ -427,7 +444,9 @@ def _write_metrics_figure(rows, output):
     ax.set_xlabel("overlap_weight")
     ax.set_ylabel("Probability (%)")
     ax.set_title("Probability by overlap_weight")
-    ax.set_xticks(weights)
+    ax.set_xticks(np.arange(0, 1.05, 0.05))  # si tu veux garder tous les ticks (traits)
+    labels = [f"{w:.2f}" for w in np.arange(0, 1.05, 0.05)]
+    ax.set_xticklabels(labels)
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=8)
     fig.tight_layout()
@@ -440,10 +459,10 @@ def main():
     parser.add_argument(
         "--skymap",
         type=Path,
-        default=Path("/home/liteul/phd/events/skymaps/fake_gaussian_30.fits"),
+        default=Path("/Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits"),
     )
     args = parser.parse_args()
-
+    WEIGHTS = parse_weights(path = args.root)
     runs = [
         args.root / f"w_{weight:.2f}"
         for weight in WEIGHTS

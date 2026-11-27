@@ -6,7 +6,7 @@ frame_2.png vient avant frame_10.png.
 
 Usage :
     python make_gif.py /chemin/vers/dossier
-    python make_gif.py /chemin/vers/dossier -o sortie.gif --duration 100 --loop 0
+    python /Users/jamsin/phd/overlap/make_gif.py /Users/jamsin/phd/overlap/rub_ztf/gap_maps -o /Users/jamsin/phd/overlap/rub_ztf/gap_maps/anim.gif --duration 750 --loop 0
 
 Dépendance : Pillow  (pip install pillow)
 """

@@ -1,0 +1,214 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: action, datatype: string, description: Action for the spacecraft}
+# - {name: start_time, datatype: string, description: Start time of segment}
+# - {name: duration, unit: s, datatype: float64, description: Duration of segment}
+# - name: observer_location.x
+#   unit: m
+#   datatype: float64
+#   description: Position of the spacecraft
+#   meta: !!omap
+#   - {source: 'https://arxiv.org/abs/1210.1616'}
+#   - {timezone: Chile/Continental}
+# - name: observer_location.y
+#   unit: m
+#   datatype: float64
+#   description: Position of the spacecraft
+#   meta: !!omap
+#   - {source: 'https://arxiv.org/abs/1210.1616'}
+#   - {timezone: Chile/Continental}
+# - name: observer_location.z
+#   unit: m
+#   datatype: float64
+#   description: Position of the spacecraft
+#   meta: !!omap
+#   - {source: 'https://arxiv.org/abs/1210.1616'}
+#   - {timezone: Chile/Continental}
+# - {name: target_coord.ra, unit: deg, datatype: float64}
+# - {name: target_coord.dec, unit: deg, datatype: float64}
+# - {name: roll, unit: deg, datatype: float64, description: Position angle of the FOV}
+# - {name: field_id, datatype: int64, description: The mission's ID for the field observed}
+# - {name: bandpass, datatype: string, description: Detector bandpass}
+# meta: !!omap
+# - total_time:
+#     observe: !astropy.units.Quantity
+#       unit: &id001 !astropy.units.Unit {unit: s}
+#       value: 8400.0
+#     slack: !astropy.units.Quantity
+#       unit: *id001
+#       value: 13000.395105892425
+#     slew: !astropy.units.Quantity
+#       unit: *id001
+#       value: 199.60489410757492
+# - {command: '/Users/jamsin/anaconda3/envs/phd/bin/m4opt schedule-multi /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits /Users/jamsin/phd/overlap/rub_ztf/w_0.98/schedule
+#     --overlap-weight=0.98 --exptime-min=300s --bandpass=r --deadline=6h --time-step=1min --max-fields=50 --timelimit=10min --jobs=9
+#     --write-candidates /Users/jamsin/phd/overlap/rub_ztf/w_0.98/candidates --event-time=2026-04-21T04:00:00 --mission-names rubin --mission-names
+#     ztf'}
+# - {version: 4.0.1.dev11+gbbe599cab}
+# - args:
+#     absmag_mean: null
+#     absmag_stdev: 0.0
+#     appmag_dist: true
+#     bandpass: [r]
+#     cutoff: null
+#     deadline: !astropy.units.Quantity
+#       unit: !astropy.units.Unit {unit: h}
+#       value: 6.0
+#     delay: !astropy.units.Quantity
+#       unit: !astropy.units.Unit {unit: d}
+#       value: 0.0
+#     event_time: '2026-04-21T04:00:00.000'
+#     exptime_max: !astropy.units.Quantity
+#       unit: *id001
+#       value: .inf
+#     exptime_min:
+#     - !astropy.units.Quantity
+#       unit: *id001
+#       value: 300.0
+#     max_fields: 50
+#     mission: rubin
+#     nside: 512
+#     skygrid: null
+#     skymap: /Users/jamsin/phd/events/skymaps/fake_gaussian_30.fits
+#     snr: 5.0
+#     time_step: !astropy.units.Quantity
+#       unit: !astropy.units.Unit {unit: min}
+#       value: 1.0
+#     visits: 1
+# - {objective_value: 0.2420105957645607}
+# - {best_bound: 0.2420105957645607}
+# - {solution_status: integer optimal solution}
+# - solution_time: !astropy.units.Quantity
+#     unit: *id001
+#     value: 0.6181111335754395
+# - __serialized_columns__:
+#     duration:
+#       __class__: astropy.units.quantity.Quantity
+#       unit: !astropy.units.Unit {unit: s}
+#       value: !astropy.table.SerializedColumn {name: duration}
+#     observer_location:
+#       __class__: astropy.coordinates.earth.EarthLocation
+#       __info__:
+#         description: Position of the spacecraft
+#         meta: {source: 'https://arxiv.org/abs/1210.1616', timezone: Chile/Continental}
+#       ellipsoid: WGS84
+#       x: !astropy.table.SerializedColumn
+#         __class__: astropy.units.quantity.Quantity
+#         __info__:
+#           description: Position of the spacecraft
+#           meta: {source: 'https://arxiv.org/abs/1210.1616', timezone: Chile/Continental}
+#         unit: &id002 !astropy.units.Unit {unit: m}
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: observer_location.x}
+#       y: !astropy.table.SerializedColumn
+#         __class__: astropy.units.quantity.Quantity
+#         __info__:
+#           description: Position of the spacecraft
+#           meta: {source: 'https://arxiv.org/abs/1210.1616', timezone: Chile/Continental}
+#         unit: *id002
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: observer_location.y}
+#       z: !astropy.table.SerializedColumn
+#         __class__: astropy.units.quantity.Quantity
+#         __info__:
+#           description: Position of the spacecraft
+#           meta: {source: 'https://arxiv.org/abs/1210.1616', timezone: Chile/Continental}
+#         unit: *id002
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: observer_location.z}
+#     roll:
+#       __class__: astropy.units.quantity.Quantity
+#       __info__: {description: Position angle of the FOV}
+#       unit: &id003 !astropy.units.Unit {unit: deg}
+#       value: !astropy.table.SerializedColumn
+#         __class__: astropy.utils.masked.core.MaskedNDArray
+#         data: !astropy.table.SerializedColumn {name: roll}
+#     start_time:
+#       __class__: astropy.time.core.Time
+#       format: iso
+#       in_subfmt: '*'
+#       out_subfmt: '*'
+#       precision: 3
+#       scale: utc
+#       value: !astropy.table.SerializedColumn {name: start_time}
+#     target_coord:
+#       __class__: astropy.coordinates.sky_coordinate.SkyCoord
+#       __info__: {description: Coordinates of the center of the FOV}
+#       dec: !astropy.table.SerializedColumn
+#         __class__: astropy.coordinates.angles.core.Latitude
+#         unit: *id003
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: target_coord.dec}
+#       frame: icrs
+#       ra: !astropy.table.SerializedColumn
+#         __class__: astropy.coordinates.angles.core.Longitude
+#         unit: *id003
+#         value: !astropy.table.SerializedColumn
+#           __class__: astropy.utils.masked.core.MaskedNDArray
+#           data: !astropy.table.SerializedColumn {name: target_coord.ra}
+#         wrap_angle: !astropy.coordinates.Angle
+#           unit: *id003
+#           value: 360.0
+#       representation_type: spherical
+# schema: astropy-2.0
+action start_time duration observer_location.x observer_location.y observer_location.z target_coord.ra target_coord.dec roll field_id bandpass
+observe "2026-04-21 04:00:00.000" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 204.01770452199818 14.248852933747312 0.0 10033 r
+slew "2026-04-21 04:05:00.000" 6.771981504094594 "" "" "" "" "" "" "" ""
+observe "2026-04-21 04:05:06.772" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 201.29357772339864 9.289375401625467 0.0 9983 r
+slew "2026-04-21 04:10:06.772" 6.658098335364476 "" "" "" "" "" "" "" ""
+observe "2026-04-21 04:10:13.430" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 200.63858890893127 3.8414307755498642 0.0 9949 r
+slew "2026-04-21 04:15:13.430" 5.140047767275161 "" "" "" "" "" "" "" ""
+observe "2026-04-21 04:15:18.570" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 198.38124876695818 6.123896414390734 0.0 9920 r
+slew "2026-04-21 04:20:18.570" 4.175434782390134 "" "" "" "" "" "" "" ""
+observe "2026-04-21 04:20:22.746" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 196.52190420171559 6.466457879577713 0.0 9890 r
+slew "2026-04-21 04:25:22.746" 12.984522862804075 "" "" "" "" "" "" "" ""
+observe "2026-04-21 04:25:35.730" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 211.21403272214522 3.552352080874706 0.0 7697 r
+slew "2026-04-21 04:30:35.730" 13.642370108611724 "" "" "" "" "" "" "" ""
+observe "2026-04-21 06:43:54.721" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 200.09243619673555 15.022260243236216 0.0 9986 r
+slew "2026-04-21 06:48:54.721" 12.0358997187033 "" "" "" "" "" "" "" ""
+observe "2026-04-21 06:49:06.757" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 206.06671002229552 2.8506028374280405 0.0 10027 r
+slew "2026-04-21 06:54:06.757" 6.173862652468695 "" "" "" "" "" "" "" ""
+observe "2026-04-21 06:54:12.930" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 202.07169481003135 5.440531538568306 0.0 9981 r
+slew "2026-04-21 06:59:12.930" 8.13444810394532 "" "" "" "" "" "" "" ""
+observe "2026-04-21 06:59:21.065" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 208.46476062400635 9.737463635136498 0.0 10058 r
+slew "2026-04-21 07:04:21.065" 12.462612735103184 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:04:33.527" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 195.1358777882765 4.847045403994114 0.0 9860 r
+slew "2026-04-21 07:09:33.527" 4.364969183106524 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:09:37.892" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 193.78331042444034 3.21055700095194 0.0 9831 r
+slew "2026-04-21 07:14:37.892" 7.262539612791208 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:14:45.155" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 197.94310546230452 8.067229434120094 0.0 9921 r
+slew "2026-04-21 07:19:45.155" 4.3865328781472215 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:19:49.542" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 199.40130449677983 9.64768926147253 0.0 9952 r
+slew "2026-04-21 07:24:49.542" 11.742758104453848 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:25:01.284" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 207.09070688716443 -0.9835605311774248 0.0 10507 r
+slew "2026-04-21 07:30:01.284" 4.126038478293692 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:30:05.410" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 206.2113006074253 -2.5910167445844117 0.0 10506 r
+slew "2026-04-21 07:35:05.410" 6.593207357219939 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:35:12.004" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 201.4562116901241 -0.05273169841284594 0.0 10420 r
+slew "2026-04-21 07:40:12.004" 5.073701053829673 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:40:17.077" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 198.6426335264765 -1.3792544754168539 0.0 10393 r
+slew "2026-04-21 07:45:17.077" 11.870315799267138 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:45:28.948" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 204.70441566501677 10.470704443429822 0.0 10031 r
+slew "2026-04-21 07:50:28.948" 5.4289258166086185 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:50:34.376" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 203.54007211389109 7.018314589383253 0.0 10008 r
+slew "2026-04-21 07:55:34.376" 6.66034095584883 "" "" "" "" "" "" "" ""
+observe "2026-04-21 07:55:41.037" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 202.83742343431132 1.572915400783422 0.0 9979 r
+slew "2026-04-21 08:00:41.037" 7.607046501733162 "" "" "" "" "" "" "" ""
+observe "2026-04-21 08:00:48.644" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 197.67723221511872 -3.025203284672101 0.0 10392 r
+slew "2026-04-21 08:05:48.644" 6.974228153265901 "" "" "" "" "" "" "" ""
+observe "2026-04-21 08:05:55.618" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 201.04189532052482 1.8965449826820835 0.0 9948 r
+slew "2026-04-21 08:10:55.618" 4.38193618585008 "" "" "" "" "" "" "" ""
+observe "2026-04-21 08:11:00.000" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 202.45585550563496 3.508952092135258 0.0 9980 r
+slew "2026-04-21 08:16:00.000" 5.334974682154264 "" "" "" "" "" "" "" ""
+observe "2026-04-21 08:16:55.604" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 205.72623766214943 4.762853074049058 0.0 10028 r
+slew "2026-04-21 08:21:55.604" 4.3962549176070365 "" "" "" "" "" "" "" ""
+observe "2026-04-21 08:22:00.000" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 207.22256795967513 6.324430843039868 0.0 10045 r
+slew "2026-04-21 08:27:00.000" 7.8573832977599425 "" "" "" "" "" "" "" ""
+observe "2026-04-21 08:34:00.000" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 205.20587756680013 -0.6773482687165846 0.0 10477 r
+slew "2026-04-21 08:39:00.000" 7.36446255887715 "" "" "" "" "" "" "" ""
+observe "2026-04-21 08:58:00.000" 300.0 1818939.006697467 -5208471.035307804 -3195171.415436697 211.717474411461 0.0 0.0 11 r
