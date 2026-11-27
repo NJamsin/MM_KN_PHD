@@ -17,6 +17,8 @@ import numpy as np
 from astropy.coordinates import ICRS
 from astropy.table import QTable
 from astropy_healpix import HEALPix
+from m4opt import missions
+from m4opt.fov import footprint_healpix
 
 # (candidate footprints, candidate centers, scheduled footprints, scheduled centers)
 PALETTES = [
@@ -30,51 +32,70 @@ SCHED_MARKERS = ["o", "s", "^", "D"]
 
 
 def load_telescope(candidates_path, schedule_path):
-    candidates = np.load(candidates_path)
+    with np.load(candidates_path) as candidates:
+        field_ids = np.asarray(candidates["field_id"])
+        offsets = np.asarray(candidates["footprint_offsets"])
+        pixels = np.asarray(candidates["footprint_pixels"])
+        candidate_ra = np.asarray(candidates["ra_deg"])
+        candidate_dec = np.asarray(candidates["dec_deg"])
+        nside = int(candidates["nside"])
+        order = str(candidates["order"])
+
     schedule = QTable.read(schedule_path, format="ascii.ecsv")
 
-    field_ids = candidates["field_id"]
-    offsets = candidates["footprint_offsets"]
-    pixels = candidates["footprint_pixels"]
-    if len(offsets) != len(field_ids) + 1 or offsets[-1] != len(pixels):
+    if (
+        len(offsets) != len(field_ids) + 1
+        or offsets[0] != 0
+        or offsets[-1] != len(pixels)
+        or np.any(np.diff(offsets) < 0)
+    ):
         raise ValueError(
             f"Candidate footprint offsets do not match the candidate data ({candidates_path})"
         )
 
     observations = schedule[schedule["action"] == "observe"]
-    scheduled_ids = np.unique(observations["field_id"])
-    scheduled_mask = np.isin(field_ids, scheduled_ids)
-    missing_ids = np.setdiff1d(scheduled_ids, field_ids)
-    if len(missing_ids):
-        raise ValueError(
-            f"Schedule {schedule_path} contains fields missing from the candidate "
-            f"export: {missing_ids.tolist()}"
-        )
-
     all_footprints = [
         pixels[offsets[i] : offsets[i + 1]] for i in range(len(field_ids))
     ]
-    candidate_pixels = np.unique(np.concatenate(all_footprints))
-    scheduled_footprints = [
-        fp for fp, sel in zip(all_footprints, scheduled_mask) if sel
-    ]
+    nonempty_candidate_footprints = [fp for fp in all_footprints if fp.size]
+    candidate_pixels = (
+        np.unique(np.concatenate(nonempty_candidate_footprints))
+        if nonempty_candidate_footprints
+        else np.asarray([], dtype=np.intp)
+    )
+
+    try:
+        mission = schedule.meta["args"]["mission"]
+    except KeyError as error:
+        raise ValueError(f"{schedule_path} is missing scheduler mission metadata.") from error
     scheduled_pixels = (
-        np.unique(np.concatenate(scheduled_footprints))
-        if scheduled_footprints
+        np.unique(
+            np.concatenate(
+                footprint_healpix(
+                    HEALPix(nside=nside, frame=ICRS(), order=order),
+                    getattr(missions, mission).fov,
+                    observations["target_coord"],
+                    observations["roll"],
+                )
+            )
+        )
+        if len(observations)
         else np.asarray([], dtype=np.intp)
     )
 
     hpx = HEALPix(
-        nside=int(candidates["nside"]),
+        nside=nside,
         frame=ICRS(),
-        order=str(candidates["order"]),
+        order=order,
     )
+    scheduled_centers = observations["target_coord"]
     return {
-        "ra": np.asarray(candidates["ra_deg"]),
-        "dec": np.asarray(candidates["dec_deg"]),
+        "ra": candidate_ra,
+        "dec": candidate_dec,
         "n_fields": len(field_ids),
-        "scheduled_mask": scheduled_mask,
-        "n_scheduled": int(np.count_nonzero(scheduled_mask)),
+        "scheduled_ra": np.asarray(scheduled_centers.ra.deg),
+        "scheduled_dec": np.asarray(scheduled_centers.dec.deg),
+        "n_scheduled": len(np.unique(observations["field_id"])),
         "n_obs": len(observations),
         "candidate_coords": hpx.healpix_to_skycoord(candidate_pixels),
         "scheduled_coords": hpx.healpix_to_skycoord(scheduled_pixels),
@@ -123,8 +144,15 @@ def main():
 
     tels = [load_telescope(c, s) for c, s in zip(args.candidates, args.schedule)]
 
-    # Centre commun en RA (moyenne circulaire sur tous les télescopes)
-    all_ra = np.concatenate([t["ra"] for t in tels])
+    # Centre commun en RA (moyenne circulaire sur candidats et champs planifiés)
+    all_ra = np.concatenate(
+        [
+            coordinates
+            for tel in tels
+            for coordinates in (tel["ra"], tel["scheduled_ra"])
+            if coordinates.size
+        ]
+    )
     ra_center = np.arctan2(
         np.sin(np.deg2rad(all_ra)).mean(), np.cos(np.deg2rad(all_ra)).mean()
     )
@@ -134,9 +162,21 @@ def main():
             (np.deg2rad(ra_deg) - ra_center + np.pi) % (2 * np.pi) - np.pi
         )
 
-    # Limites communes aux deux panneaux (les schedulés sont inclus dans les candidats)
-    x_values = np.concatenate([local_x(t["candidate_coords"].ra.deg) for t in tels])
-    y_values = np.concatenate([t["candidate_coords"].dec.deg for t in tels])
+    # Limites communes aux panneaux, y compris les champs planifiés absents des NPZ.
+    plotted_coordinates = [
+        coordinates
+        for tel in tels
+        for coordinates in (tel["candidate_coords"], tel["scheduled_coords"])
+        if len(coordinates)
+    ]
+    if not plotted_coordinates:
+        raise ValueError("No candidate or scheduled field footprints are available to plot.")
+    x_values = np.concatenate(
+        [local_x(coordinates.ra.deg) for coordinates in plotted_coordinates]
+    )
+    y_values = np.concatenate(
+        [coordinates.dec.deg for coordinates in plotted_coordinates]
+    )
     x_margin = max(np.ptp(x_values) * 0.08, 0.1)
     y_margin = max(np.ptp(y_values) * 0.08, 0.1)
     xlim = (x_values.max() + x_margin, x_values.min() - x_margin)  # RA croît vers la gauche
@@ -146,7 +186,6 @@ def main():
 
     for i, (tel, label, palette) in enumerate(zip(tels, labels, cycle(PALETTES))):
         cand_fp, cand_c, sched_fp, sched_c = palette
-        mask = tel["scheduled_mask"]
         cand_marker = CAND_MARKERS[i % len(CAND_MARKERS)]
         sched_marker = SCHED_MARKERS[i % len(SCHED_MARKERS)]
 
@@ -183,16 +222,17 @@ def main():
                 rasterized=True,
                 label=f"{label} – scheduled footprints ({tel['n_scheduled']} fields)",
             )
-        ax_scheduled.scatter(
-            local_x(tel["ra"][mask]),
-            tel["dec"][mask],
-            marker=sched_marker,
-            s=24,
-            facecolors="none",
-            edgecolors=sched_c,
-            linewidths=1.0,
-            label=f"{label} – scheduled centers",
-        )
+        if tel["n_scheduled"]:
+            ax_scheduled.scatter(
+                local_x(tel["scheduled_ra"]),
+                tel["scheduled_dec"],
+                marker=sched_marker,
+                s=24,
+                facecolors="none",
+                edgecolors=sched_c,
+                linewidths=1.0,
+                label=f"{label} – scheduled centers",
+            )
 
     total_cand = sum(t["n_fields"] for t in tels)
     total_sched = sum(t["n_scheduled"] for t in tels)
